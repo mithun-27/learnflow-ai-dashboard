@@ -48,6 +48,7 @@ const Landing = () => {
             <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">Log In</Button>
             </Link>
