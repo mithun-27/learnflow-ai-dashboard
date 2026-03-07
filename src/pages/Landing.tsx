@@ -5,7 +5,6 @@ import {
   Sparkles, ArrowRight, CheckCircle2, Zap, Star, Github
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ThemeToggle from "@/components/ThemeToggle";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -48,7 +47,6 @@ const Landing = () => {
             <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
             <Link to="/dashboard">
               <Button variant="ghost" size="sm">Log In</Button>
             </Link>
