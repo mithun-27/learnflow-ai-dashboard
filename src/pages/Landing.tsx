@@ -5,6 +5,7 @@ import {
   Sparkles, ArrowRight, CheckCircle2, Zap, Star, Github
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
