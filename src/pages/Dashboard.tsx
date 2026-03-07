@@ -4,7 +4,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import DashboardLayout from "@/components/DashboardLayout";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { ActivityCalendar } from "react-activity-calendar";
+import { useTheme } from "next-themes";
+import { subDays, format } from "date-fns";
 
 const stats = [
   { label: "Topics Learning", value: "8", icon: BookOpen, color: "bg-primary/10 text-primary" },
@@ -19,11 +21,27 @@ const topics = [
   { title: "Python Programming", progress: 80 },
 ];
 
-const weeklyData = [
-  { day: "Mon", lessons: 4 }, { day: "Tue", lessons: 6 }, { day: "Wed", lessons: 3 },
-  { day: "Thu", lessons: 7 }, { day: "Fri", lessons: 5 }, { day: "Sat", lessons: 8 },
-  { day: "Sun", lessons: 2 },
-];
+const generateCalendarData = () => {
+  const data = [];
+  const today = new Date();
+  for (let i = 365; i >= 0; i--) {
+    const date = subDays(today, i);
+    const count = Math.floor(Math.random() * 5); // 0 to 4
+    let level = 0;
+    if (count === 1) level = 1;
+    if (count === 2) level = 2;
+    if (count === 3) level = 3;
+    if (count >= 4) level = 4;
+    data.push({
+      date: format(date, "yyyy-MM-dd"),
+      count,
+      level: level as 0 | 1 | 2 | 3 | 4,
+    });
+  }
+  return data;
+};
+
+const activityData = generateCalendarData();
 
 const fadeUp = {
   hidden: { opacity: 0, y: 15 },
@@ -31,6 +49,12 @@ const fadeUp = {
 };
 
 const Dashboard = () => {
+  const { theme, systemTheme } = useTheme();
+
+  // Determine actual theme used for ActivityCalendar
+  const resolvedTheme = theme === 'system' ? systemTheme : theme;
+  const isDark = resolvedTheme === 'dark';
+
   return (
     <DashboardLayout>
       <div className="p-6 max-w-6xl mx-auto space-y-8">
@@ -72,26 +96,41 @@ const Dashboard = () => {
 
         {/* Weekly Chart */}
         <motion.div variants={fadeUp} custom={5} initial="hidden" animate="visible"
-          className="glass-card p-6"
+          className="glass-card p-6 overflow-hidden"
         >
-          <h3 className="font-semibold mb-4">Weekly Learning Progress</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="day" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                <YAxis tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "hsl(var(--card))",
-                    border: "1px solid hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px"
-                  }}
-                />
-                <Bar dataKey="lessons" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+          <h3 className="font-semibold mb-6">Learning Contributions</h3>
+          <div className="flex justify-center w-full overflow-x-auto pb-4">
+            <div className="min-w-fit">
+              <ActivityCalendar
+                data={activityData}
+                maxLevel={4}
+                blockSize={14}
+                blockRadius={2}
+                blockMargin={4}
+                colorScheme={isDark ? "dark" : "light"}
+                theme={{
+                  light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+                  dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+                }}
+                labels={{
+                  legend: {
+                    less: "Less",
+                    more: "More"
+                  },
+                  months: [
+                    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                  ],
+                  weekdays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                  totalCount: '{{count}} lessons in the last year'
+                }}
+                renderBlock={(block, activity) => (
+                  <div title={`${activity.count} lessons on ${activity.date}`}>
+                    {block}
+                  </div>
+                )}
+              />
+            </div>
           </div>
         </motion.div>
       </div>

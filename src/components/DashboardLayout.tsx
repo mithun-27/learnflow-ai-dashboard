@@ -8,6 +8,7 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
@@ -70,11 +71,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </Sidebar>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center border-b border-border px-4 bg-background/80 backdrop-blur-md sticky top-0 z-40">
-            <SidebarTrigger className="mr-4" />
-            <h2 className="font-semibold text-sm truncate">
-              {navItems.find(i => i.url === location.pathname)?.title || "LearnFlow AI"}
-            </h2>
+          <header className="h-14 flex items-center justify-between border-b border-border px-4 bg-background/80 backdrop-blur-md sticky top-0 z-40">
+            <div className="flex items-center">
+              <SidebarTrigger className="mr-4" />
+              <h2 className="font-semibold text-sm truncate">
+                {navItems.find(i => i.url === location.pathname)?.title || "LearnFlow AI"}
+              </h2>
+            </div>
+            <ThemeToggle />
           </header>
           <main className="flex-1 overflow-auto">
             {children}
