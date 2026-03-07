@@ -13,28 +13,32 @@ import KnowledgeGraph from "./pages/KnowledgeGraph";
 import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
+import { ThemeProvider } from "./components/ThemeProvider";
+
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/topics" element={<TopicGenerator />} />
-          <Route path="/lesson/:id" element={<LessonReader />} />
-          <Route path="/tutor" element={<AiTutor />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/knowledge-graph" element={<KnowledgeGraph />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ThemeProvider defaultTheme="system" enableSystem attribute="class">
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/topics" element={<TopicGenerator />} />
+            <Route path="/lesson/:id" element={<LessonReader />} />
+            <Route path="/tutor" element={<AiTutor />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/knowledge-graph" element={<KnowledgeGraph />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;
