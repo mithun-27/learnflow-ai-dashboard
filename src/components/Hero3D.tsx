@@ -66,13 +66,13 @@ const Spheres = () => {
     const { pointer, camera, scene } = useThree();
 
     useFrame(() => {
-        // Similar to the Three.js example, the camera gently follows the pointer
-        const targetX = pointer.x * 2;
-        const targetY = pointer.y * 2;
+        // Drastically increased multiplier from 10 to 40 for a very wide, noticeable parallax swing
+        const targetX = pointer.x * 40;
+        const targetY = pointer.y * 40;
 
-        // Lerp the camera position for smoothness
-        camera.position.x += (targetX - camera.position.x) * .05;
-        camera.position.y += (targetY - camera.position.y) * .05;
+        // Increased lerp speed from 0.1 to 0.2 for much faster, snappier movement
+        camera.position.x += (targetX - camera.position.x) * .2;
+        camera.position.y += (targetY - camera.position.y) * .2;
         camera.lookAt(scene.position); // Always look at origin
     });
 
