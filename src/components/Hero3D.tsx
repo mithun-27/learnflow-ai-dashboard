@@ -1,79 +1,110 @@
-import { useRef } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+import { ParallaxBarrierEffect } from "three/addons/effects/ParallaxBarrierEffect.js";
 
-// Custom auto-rotating component to replace OrbitControls
-const AutoRotatingCamera = () => {
-    const { camera } = useThree();
+// Stereoscopic Parallax Barrier Effect
+const Effect = () => {
+    const { gl, scene, camera, size } = useThree();
+    const effect = useMemo(() => new ParallaxBarrierEffect(gl), [gl]);
 
-    useFrame((state) => {
-        // Slowly rotate camera around the origin
-        const speed = 0.5;
-        const radius = 6;
-        const angle = state.clock.elapsedTime * speed;
+    useEffect(() => {
+        effect.setSize(size.width, size.height);
+    }, [effect, size]);
 
-        camera.position.x = Math.sin(angle) * radius;
-        camera.position.z = Math.cos(angle) * radius;
-        camera.lookAt(0, 0, 0);
-    });
+    useFrame(() => {
+        // Priority 1 renders after everything else
+        effect.render(scene, camera);
+    }, 1);
 
     return null;
 };
 
-const AnimatedKnot = () => {
-    const meshRef = useRef<THREE.Mesh>(null!);
-    const groupRef = useRef<THREE.Group>(null!);
+// Background Environment Setup 
+const EnvironmentSetup = () => {
+    const { scene } = useThree();
 
-    useFrame((state, delta) => {
-        // Base object rotation
-        if (meshRef.current) {
-            meshRef.current.rotation.x += delta * 0.2;
-            meshRef.current.rotation.y += delta * 0.3;
-        }
+    useEffect(() => {
+        scene.background = new THREE.Color(0x050512); // Deep space blue/black
+    }, [scene]);
 
-        // Float effect to replace <Float>
-        if (groupRef.current) {
-            const t = state.clock.elapsedTime;
-            groupRef.current.position.y = Math.sin(t * 2) * 0.2; // Float up and down
-            groupRef.current.rotation.x = Math.cos(t * 1.5) * 0.1; // Slight wobble
-            groupRef.current.rotation.z = Math.sin(t * 1.5) * 0.1; // Slight wobble
+    return null;
+};
+
+// Floating Spheres Instanced rendering
+const Spheres = () => {
+    const meshRef = useRef<THREE.InstancedMesh>(null!);
+    const count = 500;
+    const dummy = useMemo(() => new THREE.Object3D(), []);
+
+    // Generate random positions and scales for the spheres
+    const spheres = useMemo(() => {
+        const temp = [];
+        for (let i = 0; i < count; i++) {
+            temp.push({
+                position: new THREE.Vector3(
+                    Math.random() * 10 - 5,
+                    Math.random() * 10 - 5,
+                    Math.random() * 10 - 5
+                ),
+                scale: Math.random() + 0.5, // sizes between 0.5 and 1.5
+            });
         }
+        return temp;
+    }, [count]);
+
+    useEffect(() => {
+        spheres.forEach((sphere, i) => {
+            dummy.position.copy(sphere.position);
+            dummy.scale.setScalar(sphere.scale * 0.15); // Adjust scale appropriately 
+            dummy.updateMatrix();
+            meshRef.current.setMatrixAt(i, dummy.matrix);
+        });
+        meshRef.current.instanceMatrix.needsUpdate = true;
+    }, [dummy, spheres]);
+
+    const { pointer, camera, scene } = useThree();
+
+    useFrame(() => {
+        // Similar to the Three.js example, the camera gently follows the pointer
+        const targetX = pointer.x * 2;
+        const targetY = pointer.y * 2;
+
+        // Lerp the camera position for smoothness
+        camera.position.x += (targetX - camera.position.x) * .05;
+        camera.position.y += (targetY - camera.position.y) * .05;
+        camera.lookAt(scene.position); // Always look at origin
     });
 
     return (
-        <group ref={groupRef}>
-            <mesh ref={meshRef}>
-                <torusKnotGeometry args={[1.5, 0.4, 256, 64]} />
-                <meshPhysicalMaterial
-                    color="#3b82f6" // base blue
-                    emissive="#1d4ed8" // deeper blue internal glow
-                    emissiveIntensity={0.2}
-                    roughness={0.1}
-                    metalness={0.8}
-                    clearcoat={1}
-                    clearcoatRoughness={0.1}
-                    iridescence={1}
-                    iridescenceIOR={1.5}
-                    iridescenceThicknessRange={[100, 400]}
-                />
-            </mesh>
-        </group>
+        <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+            <sphereGeometry args={[1, 32, 16]} />
+            <meshStandardMaterial
+                color="#ffffff"
+                roughness={0.1}
+                metalness={0.8}
+                emissive="#0a2a5a"
+                emissiveIntensity={0.6}
+            />
+        </instancedMesh>
     );
 };
 
 export const Hero3D = () => {
     return (
-        <div className="w-full h-full absolute inset-0 -z-10">
-            <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-                {/* Expanded lighting setup to replace <Environment /> */}
-                <ambientLight intensity={1.5} color="#ffffff" />
-                <spotLight position={[10, 10, 10]} angle={0.3} penumbra={1} intensity={3} color="#aaddff" />
-                <directionalLight position={[-10, -10, -5]} intensity={2} color="#60a5fa" />
-                <directionalLight position={[10, -10, 5]} intensity={1.5} color="#ffaaee" />
-                <pointLight position={[0, 5, -5]} intensity={2} color="#ffffff" />
+        // Set to z-0 so it sits fully above any default backgrounds on the page root
+        <div className="w-full h-full absolute inset-0 z-0">
+            <Canvas camera={{ position: [0, 0, 3], fov: 60 }} dpr={[1, 2]}>
+                <EnvironmentSetup />
 
-                <AnimatedKnot />
-                <AutoRotatingCamera />
+                {/* Lights reflecting off the metallic spheres */}
+                <ambientLight intensity={0.5} color="#ffffff" />
+                <directionalLight position={[10, 10, 5]} intensity={3} color="#ffffff" />
+                <directionalLight position={[-10, -10, -5]} intensity={2} color="#60a5fa" />
+                <pointLight position={[0, 0, 0]} intensity={1.5} color="#ffaaee" />
+
+                <Spheres />
+                <Effect />
             </Canvas>
         </div>
     );

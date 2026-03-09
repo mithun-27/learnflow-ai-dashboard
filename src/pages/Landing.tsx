@@ -64,9 +64,9 @@ const Landing = () => {
         <Hero3D />
 
         {/* Dark overlay to ensure text readability against the 3D model */}
-        <div className="absolute inset-0 bg-black/40 -z-0 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/40 z-10 pointer-events-none" />
 
-        <div className="container mx-auto px-4 relative z-10 w-full">
+        <div className="container mx-auto px-4 relative z-20 w-full">
           <motion.div
             className="w-full text-center max-w-3xl mx-auto"
             initial="hidden"
