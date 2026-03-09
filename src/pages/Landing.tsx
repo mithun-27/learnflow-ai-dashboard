@@ -5,6 +5,7 @@ import {
   Sparkles, ArrowRight, CheckCircle2, Zap, Star, Github
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Hero3D } from "@/components/Hero3D";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -58,80 +59,47 @@ const Landing = () => {
       </nav>
 
       {/* Hero */}
-      <section className="pt-32 pb-20 gradient-hero-bg relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-1/4 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl" />
-        </div>
-        <div className="container mx-auto px-4 relative z-10">
+      <section className="min-h-screen pt-32 pb-20 relative overflow-hidden flex items-center">
+        {/* 3D Background */}
+        <Hero3D />
+
+        {/* Dark overlay to ensure text readability against the 3D model */}
+        <div className="absolute inset-0 bg-black/40 -z-0 pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative z-10 w-full">
           <motion.div
-            className="max-w-3xl mx-auto text-center"
+            className="w-full text-left max-w-5xl"
             initial="hidden"
             animate="visible"
           >
-            <motion.div variants={fadeUp} custom={0}
-              className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-6"
-            >
-              <Sparkles className="h-4 w-4" /> Powered by AI
-            </motion.div>
             <motion.h1 variants={fadeUp} custom={1}
-              className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight"
+              className="text-7xl md:text-9xl font-black mb-8 leading-[0.9] tracking-tighter text-white"
+              style={{
+                fontFamily: 'Inter, system-ui, sans-serif'
+              }}
             >
-              Master Any Concept{" "}
-              <span className="gradient-text">with AI</span>
+              amara.
             </motion.h1>
             <motion.p variants={fadeUp} custom={2}
-              className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto"
+              className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl font-medium tracking-tight"
             >
-              Generate structured learning roadmaps, read lessons, take quizzes,
-              and track your progress using AI.
+              Senior interactive designer based in New York. Currently at OneDream.
+              Always trying to push my work to new horizons.
             </motion.p>
-            <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-start gap-4">
               <Link to="/dashboard">
-                <Button size="lg" className="gradient-bg border-0 text-primary-foreground px-8 h-12 text-base">
+                <Button size="lg" className="bg-white text-black hover:bg-white/90 font-bold px-8 h-14 text-base rounded-full">
                   Start Learning <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/topics">
-                <Button size="lg" variant="outline" className="px-8 h-12 text-base">
+                <Button size="lg" variant="outline" className="px-8 h-14 text-base text-white border-white hover:bg-white/10 rounded-full font-bold">
                   Try Demo
                 </Button>
               </Link>
             </motion.div>
           </motion.div>
 
-          {/* Hero Visual */}
-          <motion.div
-            variants={fadeUp} custom={4}
-            initial="hidden" animate="visible"
-            className="mt-16 max-w-4xl mx-auto"
-          >
-            <div className="glass-card p-6 rounded-2xl">
-              <div className="bg-muted rounded-xl p-8 flex flex-col items-center gap-4">
-                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Brain className="h-5 w-5 text-primary" />
-                  <span>AI is generating your learning roadmap...</span>
-                </div>
-                <div className="w-full max-w-md space-y-3">
-                  {["Introduction to Machine Learning", "Supervised Learning", "Neural Networks", "Deep Learning"].map((t, i) => (
-                    <motion.div
-                      key={t}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.8 + i * 0.2 }}
-                      className="flex items-center gap-3 bg-card rounded-lg p-3 border border-border"
-                    >
-                      <div className="gradient-bg rounded-md p-1.5 shrink-0">
-                        <BookOpen className="h-3.5 w-3.5 text-primary-foreground" />
-                      </div>
-                      <span className="text-sm font-medium">{t}</span>
-                      <CheckCircle2 className="h-4 w-4 text-success ml-auto" />
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
       </section>
 
