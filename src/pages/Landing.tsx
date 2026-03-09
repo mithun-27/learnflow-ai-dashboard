@@ -68,32 +68,35 @@ const Landing = () => {
 
         <div className="container mx-auto px-4 relative z-10 w-full">
           <motion.div
-            className="w-full text-left max-w-5xl"
+            className="w-full text-center max-w-3xl mx-auto"
             initial="hidden"
             animate="visible"
           >
-            <motion.h1 variants={fadeUp} custom={1}
-              className="text-7xl md:text-9xl font-black mb-8 leading-[0.9] tracking-tighter text-white"
-              style={{
-                fontFamily: 'Inter, system-ui, sans-serif'
-              }}
+            <motion.div variants={fadeUp} custom={0}
+              className="inline-flex items-center gap-2 bg-white/10 text-white rounded-full px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm border border-white/20"
             >
-              amara.
+              <Sparkles className="h-4 w-4" /> Powered by AI
+            </motion.div>
+            <motion.h1 variants={fadeUp} custom={1}
+              className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-white"
+            >
+              Master Any Concept{" "}
+              <span className="text-white drop-shadow-lg">with AI</span>
             </motion.h1>
             <motion.p variants={fadeUp} custom={2}
-              className="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl font-medium tracking-tight"
+              className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md"
             >
-              Senior interactive designer based in New York. Currently at OneDream.
-              Always trying to push my work to new horizons.
+              Generate structured learning roadmaps, read lessons, take quizzes,
+              and track your progress using AI.
             </motion.p>
-            <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-start gap-4">
+            <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/dashboard">
-                <Button size="lg" className="bg-white text-black hover:bg-white/90 font-bold px-8 h-14 text-base rounded-full">
+                <Button size="lg" className="bg-white text-black hover:bg-white/90 px-8 h-12 text-base rounded-lg font-bold">
                   Start Learning <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/topics">
-                <Button size="lg" variant="outline" className="px-8 h-14 text-base text-white border-white hover:bg-white/10 rounded-full font-bold">
+                <Button size="lg" variant="outline" className="px-8 h-12 text-base text-white border-white hover:bg-white/10 backdrop-blur-sm rounded-lg font-bold">
                   Try Demo
                 </Button>
               </Link>

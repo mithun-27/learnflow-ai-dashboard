@@ -1,18 +1,47 @@
 import { useRef } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, Float } from "@react-three/drei";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
+
+// Custom auto-rotating component to replace OrbitControls
+const AutoRotatingCamera = () => {
+    const { camera } = useThree();
+
+    useFrame((state) => {
+        // Slowly rotate camera around the origin
+        const speed = 0.5;
+        const radius = 6;
+        const angle = state.clock.elapsedTime * speed;
+
+        camera.position.x = Math.sin(angle) * radius;
+        camera.position.z = Math.cos(angle) * radius;
+        camera.lookAt(0, 0, 0);
+    });
+
+    return null;
+};
 
 const AnimatedKnot = () => {
     const meshRef = useRef<THREE.Mesh>(null!);
+    const groupRef = useRef<THREE.Group>(null!);
 
     useFrame((state, delta) => {
-        meshRef.current.rotation.x += delta * 0.2;
-        meshRef.current.rotation.y += delta * 0.3;
+        // Base object rotation
+        if (meshRef.current) {
+            meshRef.current.rotation.x += delta * 0.2;
+            meshRef.current.rotation.y += delta * 0.3;
+        }
+
+        // Float effect to replace <Float>
+        if (groupRef.current) {
+            const t = state.clock.elapsedTime;
+            groupRef.current.position.y = Math.sin(t * 2) * 0.2; // Float up and down
+            groupRef.current.rotation.x = Math.cos(t * 1.5) * 0.1; // Slight wobble
+            groupRef.current.rotation.z = Math.sin(t * 1.5) * 0.1; // Slight wobble
+        }
     });
 
     return (
-        <Float speed={2} rotationIntensity={1.5} floatIntensity={2}>
+        <group ref={groupRef}>
             <mesh ref={meshRef}>
                 <torusKnotGeometry args={[1.5, 0.4, 256, 64]} />
                 <meshPhysicalMaterial
@@ -28,7 +57,7 @@ const AnimatedKnot = () => {
                     iridescenceThicknessRange={[100, 400]}
                 />
             </mesh>
-        </Float>
+        </group>
     );
 };
 
@@ -36,15 +65,15 @@ export const Hero3D = () => {
     return (
         <div className="w-full h-full absolute inset-0 -z-10">
             <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-                <ambientLight intensity={0.5} />
-                <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={2} />
-                <directionalLight position={[-10, -10, -5]} intensity={1} color="#60a5fa" />
-
-                {/* Soft studio environment lighting */}
-                <Environment preset="city" />
+                {/* Expanded lighting setup to replace <Environment /> */}
+                <ambientLight intensity={1.5} color="#ffffff" />
+                <spotLight position={[10, 10, 10]} angle={0.3} penumbra={1} intensity={3} color="#aaddff" />
+                <directionalLight position={[-10, -10, -5]} intensity={2} color="#60a5fa" />
+                <directionalLight position={[10, -10, 5]} intensity={1.5} color="#ffaaee" />
+                <pointLight position={[0, 5, -5]} intensity={2} color="#ffffff" />
 
                 <AnimatedKnot />
-                <OrbitControls enableZoom={false} enablePan={false} autoRotate autoRotateSpeed={0.5} />
+                <AutoRotatingCamera />
             </Canvas>
         </div>
     );
