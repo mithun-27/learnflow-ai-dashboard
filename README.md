@@ -1,73 +1,68 @@
-# Welcome to your Lovable project
+# LearnFlow AI
 
-## Project info
+**LearnFlow AI** is a state-of-the-art personalized learning platform that engineers custom roadmaps for any subject. Powered by advanced AI reasoning, it provides structured modules, interactive tutoring, and progress tracking to help students master complex topics efficiently.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## ✨ Features
 
-## How can I edit this code?
+- 🎯 **AI Roadmap Generation**: Personalized learning paths based on your subject or documents.
+- 💬 **AI Tutor**: Context-aware chat assistant for deep explanations and Q&A.
+- 📊 **Progress Analytics**: Track your mastery across lessons and quizzes.
+- 🔐 **Secure Authentication**: JWT-based secure login and registration.
+- ⚡ **Real-time Processing**: Fast task handling via Celery and Redis.
 
-There are several ways of editing your application.
+## 🛠️ Technology Stack
 
-**Use Lovable**
+### Frontend
+- **React 18** + **Vite**
+- **TypeScript**
+- **Tailwind CSS** + **Shadcn UI**
+- **Framer Motion** (Animations)
+- **Lucide React** (Icons)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Backend
+- **FastAPI** (Python 3.11+)
+- **SQLAlchemy** (PostgreSQL)
+- **Celery** + **Redis** (Background Tasks)
+- **OpenRouter/OpenAI API** (LLM Integration)
+- **Pydantic** (Validation)
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Quick Start
 
-**Use your preferred IDE**
+### 1. Prerequisites
+- Node.js & npm
+- Python 3.11+
+- Docker & Docker Compose (for PostgreSQL/Redis)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### 2. Infrastructure Setup
+```bash
+cd backend
+docker-compose up -d
 ```
 
-**Edit a file directly in GitHub**
+### 3. Backend Setup
+```bash
+cd backend
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8999 --reload
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 4. Celery Worker Setup
+```bash
+cd backend
+.\venv\Scripts\celery -A app.workers.celery_worker worker --loglevel=info -P solo -Q zynova_queue
+```
 
-**Use GitHub Codespaces**
+### 5. Frontend Setup
+```bash
+npm install
+npm run dev -- --port 8081
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 📝 License
 
-## What technologies are used for this project?
+Distributed under the MIT License.
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+Built with ❤️ by the LearnFlow AI Team.
