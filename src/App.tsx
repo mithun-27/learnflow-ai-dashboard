@@ -11,6 +11,8 @@ import AiTutor from "./pages/AiTutor";
 import Quiz from "./pages/Quiz";
 import KnowledgeGraph from "./pages/KnowledgeGraph";
 import Analytics from "./pages/Analytics";
+import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 import { ThemeProvider } from "./components/ThemeProvider";
@@ -26,6 +28,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/topics" element={<TopicGenerator />} />
             <Route path="/lesson/:id" element={<LessonReader />} />
@@ -33,6 +36,7 @@ const App = () => (
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/knowledge-graph" element={<KnowledgeGraph />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

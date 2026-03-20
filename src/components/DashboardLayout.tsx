@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, BookOpen, MessageSquare, HelpCircle,
   Network, BarChart3, Settings, Zap, LogOut
@@ -17,11 +17,17 @@ const navItems = [
   { title: "Quizzes", url: "/quiz", icon: HelpCircle },
   { title: "Knowledge Graph", url: "/knowledge-graph", icon: Network },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   return (
     <SidebarProvider>
@@ -32,7 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="gradient-bg rounded-lg p-1.5 shrink-0">
                 <Zap className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-bold text-sm group-data-[collapsible=icon]:hidden">LearnFlow AI</span>
+              <span className="font-bold text-sm group-data-[collapsible=icon]:hidden bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Xynova.ai</span>
             </div>
             <SidebarGroup>
               <SidebarGroupContent>
@@ -62,10 +68,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </SidebarGroupContent>
             </SidebarGroup>
             <div className="mt-auto px-3 pb-4">
-              <Link to="/" className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+              <button 
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
                 <LogOut className="h-4 w-4" />
-                <span>Back to Home</span>
-              </Link>
+                <span>Log Out</span>
+              </button>
             </div>
           </SidebarContent>
         </Sidebar>
@@ -75,7 +84,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center">
               <SidebarTrigger className="mr-4" />
               <h2 className="font-semibold text-sm truncate">
-                {navItems.find(i => i.url === location.pathname)?.title || "LearnFlow AI"}
+                {navItems.find(i => i.url === location.pathname)?.title || "Xynova.ai"}
               </h2>
             </div>
             <ThemeToggle />

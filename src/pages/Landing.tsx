@@ -40,7 +40,7 @@ const Landing = () => {
             <div className="gradient-bg rounded-lg p-1.5">
               <Zap className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold">LearnFlow AI</span>
+            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Xynova.ai</span>
           </Link>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Features</a>
@@ -48,10 +48,10 @@ const Landing = () => {
             <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button variant="ghost" size="sm">Log In</Button>
             </Link>
-            <Link to="/dashboard">
+            <Link to="/auth">
               <Button size="sm" className="gradient-bg border-0 text-primary-foreground">Get Started</Button>
             </Link>
           </div>
@@ -81,7 +81,7 @@ const Landing = () => {
               className="text-5xl md:text-7xl font-extrabold mb-6 leading-tight text-white"
             >
               Master Any Concept{" "}
-              <span className="text-white drop-shadow-lg">with AI</span>
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">with AI</span>
             </motion.h1>
             <motion.p variants={fadeUp} custom={2}
               className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto drop-shadow-md"
@@ -90,13 +90,13 @@ const Landing = () => {
               and track your progress using AI.
             </motion.p>
             <motion.div variants={fadeUp} custom={3} className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link to="/dashboard">
-                <Button size="lg" className="bg-white text-black hover:bg-white/90 px-8 h-12 text-base rounded-lg font-bold">
+              <Link to="/auth">
+                <Button size="lg" className="bg-white text-black hover:bg-white/95 px-8 h-12 text-base rounded-lg font-bold hover:shadow-[0_0_30px_rgba(168,85,247,0.6)] hover:scale-105 transition-all duration-300">
                   Start Learning <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Link to="/topics">
-                <Button size="lg" variant="outline" className="px-8 h-12 text-base text-white border-white hover:bg-white/10 backdrop-blur-sm rounded-lg font-bold">
+              <Link to="/auth">
+                <Button size="lg" variant="outline" className="px-8 h-12 text-base text-white border-white/50 hover:border-purple-400 hover:text-purple-400 hover:bg-purple-500/10 backdrop-blur-sm rounded-lg font-bold hover:shadow-[0_0_20px_rgba(168,85,247,0.3)] transition-all duration-300">
                   Try Demo
                 </Button>
               </Link>
@@ -107,108 +107,317 @@ const Landing = () => {
       </section>
 
       {/* Features */}
-      <section id="features" className="py-24">
-        <div className="container mx-auto px-4">
+      <section id="features" className="py-28 relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative">
           <motion.div
             initial="hidden" whileInView="visible" viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl md:text-4xl font-bold mb-4">
-              Everything you need to <span className="gradient-text">learn smarter</span>
+            <motion.p variants={fadeUp} custom={0} className="text-sm font-semibold uppercase tracking-[0.2em] text-purple-400 mb-4">
+              What We Offer
+            </motion.p>
+            <motion.h2 variants={fadeUp} custom={1} className="text-4xl md:text-5xl font-bold mb-5 leading-tight">
+              Tools crafted for{" "}
+              <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
+                deep learning
+              </span>
             </motion.h2>
-            <motion.p variants={fadeUp} custom={1} className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              AI-powered tools that adapt to your learning style.
+            <motion.p variants={fadeUp} custom={2} className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Not another generic dashboard. Every feature is designed to make knowledge truly stick.
             </motion.p>
           </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {features.map((f, i) => (
-              <motion.div
-                key={f.title}
-                variants={fadeUp} custom={i}
-                initial="hidden" whileInView="visible" viewport={{ once: true }}
-                className="glass-card p-6 hover-lift group cursor-default"
-              >
-                <div className="gradient-bg rounded-xl p-3 w-fit mb-4 group-hover:scale-110 transition-transform">
-                  <f.icon className="h-6 w-6 text-primary-foreground" />
+
+          {/* Bento Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-5 max-w-6xl mx-auto">
+            {/* Card 1 — Large (spans 3 cols) */}
+            <motion.div
+              variants={fadeUp} custom={0}
+              initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="md:col-span-3 group relative rounded-2xl p-[1px] bg-gradient-to-br from-purple-500/40 via-transparent to-pink-500/40 hover:from-purple-500/70 hover:to-pink-500/70 transition-all duration-500"
+            >
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-8 h-full">
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-3.5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg shadow-purple-500/20">
+                    <Brain className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold">AI Topic Roadmap Generator</h3>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{f.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{f.desc}</p>
-              </motion.div>
-            ))}
+                <p className="text-muted-foreground leading-relaxed text-[15px]">
+                  Enter any topic — from quantum physics to watercolor painting — and our AI instantly architects a complete, structured learning path with units, lessons, and prerequisites mapped out.
+                </p>
+                <div className="mt-6 flex gap-2 flex-wrap">
+                  {["Auto-structured", "Prerequisite mapping", "Adaptive depth"].map(tag => (
+                    <span key={tag} className="text-xs px-3 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card 2 — Medium (spans 3 cols) */}
+            <motion.div
+              variants={fadeUp} custom={1}
+              initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="md:col-span-3 group relative rounded-2xl p-[1px] bg-gradient-to-br from-blue-500/40 via-transparent to-cyan-500/40 hover:from-blue-500/70 hover:to-cyan-500/70 transition-all duration-500"
+            >
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-8 h-full">
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl p-3.5 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-300 shadow-lg shadow-blue-500/20">
+                    <MessageSquare className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold">AI Tutor Chat</h3>
+                </div>
+                <p className="text-muted-foreground leading-relaxed text-[15px]">
+                  Your personal tutor that never gets tired. Ask complex questions, request explanations at different levels, and dive deep into any concept with context-aware conversations.
+                </p>
+                <div className="mt-6 flex gap-2 flex-wrap">
+                  {["Context-aware", "Multi-level explanations", "24/7 available"].map(tag => (
+                    <span key={tag} className="text-xs px-3 py-1 rounded-full bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card 3 — Small (spans 2 cols) */}
+            <motion.div
+              variants={fadeUp} custom={2}
+              initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="md:col-span-2 group relative rounded-2xl p-[1px] bg-gradient-to-br from-amber-500/40 via-transparent to-orange-500/40 hover:from-amber-500/70 hover:to-orange-500/70 transition-all duration-500"
+            >
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-7 h-full">
+                <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-3 w-fit mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg shadow-amber-500/20">
+                  <Sparkles className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">Quiz Generator</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  AI-generated quizzes that adapt to your understanding, ensuring you truly grasp every concept.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Card 4 — Small (spans 2 cols) */}
+            <motion.div
+              variants={fadeUp} custom={3}
+              initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="md:col-span-2 group relative rounded-2xl p-[1px] bg-gradient-to-br from-emerald-500/40 via-transparent to-teal-500/40 hover:from-emerald-500/70 hover:to-teal-500/70 transition-all duration-500"
+            >
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-7 h-full">
+                <div className="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-3 w-fit mb-4 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 shadow-lg shadow-emerald-500/20">
+                  <Network className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">Knowledge Graph</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Interactive mind maps that reveal hidden connections between concepts.
+                </p>
+              </div>
+            </motion.div>
+
+            {/* Card 5 — Small (spans 2 cols) */}
+            <motion.div
+              variants={fadeUp} custom={4}
+              initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="md:col-span-2 group relative rounded-2xl p-[1px] bg-gradient-to-br from-rose-500/40 via-transparent to-pink-500/40 hover:from-rose-500/70 hover:to-pink-500/70 transition-all duration-500"
+            >
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-7 h-full">
+                <div className="bg-gradient-to-br from-rose-500 to-pink-500 rounded-2xl p-3 w-fit mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg shadow-rose-500/20">
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="text-lg font-bold mb-2">Learning Analytics</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Track your streaks, quiz performance, and mastery levels across every topic.
+                </p>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-24 bg-muted/50">
-        <div className="container mx-auto px-4">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl md:text-4xl font-bold mb-4">
-              How It Works
+      <section id="how-it-works" className="py-28 relative overflow-hidden">
+        {/* Background accent */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-500/5 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-20">
+            <motion.p variants={fadeUp} custom={0} className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-400 mb-4">
+              Getting Started
+            </motion.p>
+            <motion.h2 variants={fadeUp} custom={1} className="text-4xl md:text-5xl font-bold mb-5">
+              Four steps to{" "}
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                mastery
+              </span>
             </motion.h2>
+            <motion.p variants={fadeUp} custom={2} className="text-muted-foreground text-lg max-w-lg mx-auto">
+              From curiosity to expertise in minutes, not months.
+            </motion.p>
           </motion.div>
-          <div className="grid md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-            {steps.map((s, i) => (
-              <motion.div
-                key={s.num}
-                variants={fadeUp} custom={i}
-                initial="hidden" whileInView="visible" viewport={{ once: true }}
-                className="text-center"
-              >
-                <div className="text-5xl font-extrabold gradient-text mb-4">{s.num}</div>
-                <h3 className="font-semibold mb-2">{s.title}</h3>
-                <p className="text-sm text-muted-foreground">{s.desc}</p>
-              </motion.div>
-            ))}
+
+          {/* Timeline */}
+          <div className="max-w-3xl mx-auto relative">
+            {/* Vertical gradient line */}
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-500/60 via-purple-500/60 to-emerald-500/60 -translate-x-1/2 hidden md:block" />
+            <div className="absolute left-8 top-0 bottom-0 w-[2px] bg-gradient-to-b from-blue-500/60 via-purple-500/60 to-emerald-500/60 md:hidden" />
+
+            {steps.map((s, i) => {
+              const colors = [
+                { gradient: "from-blue-500 to-cyan-500", ring: "ring-blue-500/30", text: "text-blue-400" },
+                { gradient: "from-purple-500 to-pink-500", ring: "ring-purple-500/30", text: "text-purple-400" },
+                { gradient: "from-amber-500 to-orange-500", ring: "ring-amber-500/30", text: "text-amber-400" },
+                { gradient: "from-emerald-500 to-teal-500", ring: "ring-emerald-500/30", text: "text-emerald-400" },
+              ][i];
+              const isLeft = i % 2 === 0;
+
+              return (
+                <motion.div
+                  key={s.num}
+                  variants={fadeUp} custom={i}
+                  initial="hidden" whileInView="visible" viewport={{ once: true }}
+                  className={`relative flex items-start gap-6 mb-14 last:mb-0 md:gap-0 ${isLeft ? "md:flex-row" : "md:flex-row-reverse"}`}
+                >
+                  {/* Content card */}
+                  <div className={`flex-1 ml-16 md:ml-0 ${isLeft ? "md:pr-12 md:text-right" : "md:pl-12 md:text-left"}`}>
+                    <div className="group rounded-2xl p-[1px] bg-gradient-to-br from-white/10 to-white/5 hover:from-white/20 hover:to-white/10 transition-all duration-500">
+                      <div className="bg-background/90 backdrop-blur-xl rounded-2xl p-6">
+                        <span className={`text-xs font-bold uppercase tracking-widest ${colors.text} mb-2 block`}>
+                          Step {s.num}
+                        </span>
+                        <h3 className="text-lg font-bold mb-2">{s.title}</h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Node on timeline */}
+                  <div className={`absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-gradient-to-br ${colors.gradient} flex items-center justify-center ring-4 ${colors.ring} ring-offset-2 ring-offset-background shadow-lg z-10`}>
+                    <span className="text-white text-sm font-bold">{s.num}</span>
+                  </div>
+
+                  {/* Spacer for the other side */}
+                  <div className="hidden md:block flex-1" />
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-24">
-        <div className="container mx-auto px-4">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-16">
-            <motion.h2 variants={fadeUp} custom={0} className="text-3xl md:text-4xl font-bold mb-4">
-              Simple, transparent pricing
+      <section id="pricing" className="py-28 relative overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-rose-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="container mx-auto px-4 relative">
+          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-20">
+            <motion.p variants={fadeUp} custom={0} className="text-sm font-semibold uppercase tracking-[0.2em] text-rose-400 mb-4">
+              Pricing
+            </motion.p>
+            <motion.h2 variants={fadeUp} custom={1} className="text-4xl md:text-5xl font-bold mb-5">
+              Invest in your{" "}
+              <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                growth
+              </span>
             </motion.h2>
+            <motion.p variants={fadeUp} custom={2} className="text-muted-foreground text-lg max-w-lg mx-auto">
+              Start free. Upgrade when you're ready to go unlimited.
+            </motion.p>
           </motion.div>
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Free Plan */}
             <motion.div variants={fadeUp} custom={0} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="glass-card p-8 flex flex-col"
+              className="group rounded-2xl p-[1px] bg-gradient-to-br from-white/15 via-transparent to-white/10 hover:from-white/25 hover:to-white/15 transition-all duration-500"
             >
-              <h3 className="text-xl font-bold mb-2">Free</h3>
-              <div className="text-4xl font-extrabold mb-6">$0<span className="text-base font-normal text-muted-foreground">/mo</span></div>
-              <ul className="space-y-3 mb-8 flex-1">
-                {["5 topics per month", "Limited AI tutor chat", "Basic quizzes", "Study checklist"].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/dashboard">
-                <Button variant="outline" className="w-full">Get Started</Button>
-              </Link>
-            </motion.div>
-            {/* Premium */}
-            <motion.div variants={fadeUp} custom={1} initial="hidden" whileInView="visible" viewport={{ once: true }}
-              className="glass-card p-8 flex flex-col border-primary/30 relative overflow-hidden"
-            >
-              <div className="absolute top-0 right-0 gradient-bg text-primary-foreground text-xs font-semibold px-3 py-1 rounded-bl-lg">
-                Popular
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-8 h-full flex flex-col">
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold text-muted-foreground mb-1">Starter</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black">$0</span>
+                    <span className="text-muted-foreground text-sm">/month</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-3">Perfect for exploring and getting started with AI-powered learning.</p>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent mb-6" />
+
+                <ul className="space-y-4 mb-10 flex-1">
+                  {[
+                    "5 topics per month",
+                    "Limited AI tutor conversations",
+                    "Basic quiz generation",
+                    "Study checklist tracking",
+                  ].map(f => (
+                    <li key={f} className="flex items-center gap-3 text-sm">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                      </div>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to="/dashboard">
+                  <Button variant="outline" className="w-full h-12 text-base rounded-xl border-white/15 hover:bg-white/5 font-semibold">
+                    Get Started Free
+                  </Button>
+                </Link>
               </div>
-              <h3 className="text-xl font-bold mb-2">Premium</h3>
-              <div className="text-4xl font-extrabold mb-6">$12<span className="text-base font-normal text-muted-foreground">/mo</span></div>
-              <ul className="space-y-3 mb-8 flex-1">
-                {["Unlimited topics", "Unlimited AI tutor", "Advanced quizzes", "Knowledge graphs", "Learning analytics"].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link to="/dashboard">
-                <Button className="w-full gradient-bg border-0 text-primary-foreground">Upgrade Now</Button>
-              </Link>
+            </motion.div>
+
+            {/* Premium Plan */}
+            <motion.div variants={fadeUp} custom={1} initial="hidden" whileInView="visible" viewport={{ once: true }}
+              className="group relative rounded-2xl p-[1px] bg-gradient-to-br from-purple-500/60 via-pink-500/40 to-rose-500/60 hover:from-purple-500/80 hover:via-pink-500/60 hover:to-rose-500/80 transition-all duration-500 shadow-xl shadow-purple-500/10"
+            >
+              {/* Popular badge */}
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold uppercase tracking-wider px-5 py-1.5 rounded-full shadow-lg shadow-purple-500/30">
+                  ✦ Most Popular
+                </div>
+              </div>
+
+              <div className="bg-background/95 backdrop-blur-xl rounded-2xl p-8 h-full flex flex-col">
+                <div className="mb-8">
+                  <h3 className="text-lg font-semibold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-1">Premium</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black">$12</span>
+                    <span className="text-muted-foreground text-sm">/month</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-3">Unlock the full power of AI-driven deep learning and analytics.</p>
+                </div>
+
+                <div className="h-[1px] bg-gradient-to-r from-transparent via-purple-500/30 to-transparent mb-6" />
+
+                <ul className="space-y-4 mb-10 flex-1">
+                  {[
+                    "Unlimited topics & roadmaps",
+                    "Unlimited AI tutor conversations",
+                    "Advanced adaptive quizzes",
+                    "Interactive knowledge graphs",
+                    "Full learning analytics dashboard",
+                    "Priority AI response speed",
+                  ].map(f => (
+                    <li key={f} className="flex items-center gap-3 text-sm">
+                      <div className="w-5 h-5 rounded-full bg-purple-500/15 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-purple-400" />
+                      </div>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <Link to="/dashboard">
+                  <Button className="w-full h-12 text-base rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-0 text-white font-semibold shadow-lg shadow-purple-500/20">
+                    Upgrade Now <Star className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -222,7 +431,7 @@ const Landing = () => {
               <div className="gradient-bg rounded-lg p-1.5">
                 <Zap className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-bold">LearnFlow AI</span>
+              <span className="font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">Xynova.ai</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">About</a>
@@ -231,7 +440,7 @@ const Landing = () => {
               <a href="#" className="hover:text-foreground transition-colors">Contact</a>
               <a href="#" className="hover:text-foreground transition-colors"><Github className="h-4 w-4" /></a>
             </div>
-            <p className="text-xs text-muted-foreground">© 2026 LearnFlow AI. All rights reserved.</p>
+            <p className="text-xs text-muted-foreground">© 2026 Xynova.ai. All rights reserved.</p>
           </div>
         </div>
       </footer>

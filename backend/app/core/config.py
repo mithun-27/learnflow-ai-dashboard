@@ -1,0 +1,40 @@
+import logging
+import sys
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing import Optional
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "Zynova AI"
+    VERSION: str = "1.0.0"
+    API_V1_STR: str = "/api/v1"
+
+    # Database
+    DATABASE_URL: str
+    
+    # Redis
+    REDIS_URL: str
+    
+    # Celery
+    CELERY_BROKER_URL: str
+    CELERY_RESULT_BACKEND: str
+    
+    # OpenAI / OpenRouter
+    OPENROUTER_API_KEY: str
+    AI_MODEL: str = "nvidia/nemotron-3-super-120b-a12b:free"
+    
+    # Security
+    JWT_SECRET: str
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+
+settings = Settings()
+
+# Structured Logging Setup
+logging.basicConfig(
+    stream=sys.stdout,
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("zynova_ai")

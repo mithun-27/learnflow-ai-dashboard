@@ -48,8 +48,24 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.4 } })
 };
 
+import { useEffect, useState } from "react";
+import { api, Topic } from "@/lib/api";
+
 const Dashboard = () => {
   const { theme, systemTheme } = useTheme();
+  const [userTopics, setUserTopics] = useState<Topic[]>([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.getTopics();
+        setUserTopics(res);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data", err);
+      }
+    };
+    fetchDashboardData();
+  }, []);
 
   // Determine actual theme used for ActivityCalendar
   const resolvedTheme = theme === 'system' ? systemTheme : theme;
@@ -67,7 +83,7 @@ const Dashboard = () => {
               <div className={`rounded-lg p-2 w-fit mb-3 ${s.color}`}>
                 <s.icon className="h-5 w-5" />
               </div>
-              <p className="text-2xl font-bold">{s.value}</p>
+              <p className="text-2xl font-bold">{s.label === "Topics Learning" ? userTopics.length : s.value}</p>
               <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
             </motion.div>
           ))}
@@ -77,20 +93,29 @@ const Dashboard = () => {
         <motion.div variants={fadeUp} custom={4} initial="hidden" animate="visible">
           <h3 className="font-semibold mb-4">Continue Learning</h3>
           <div className="grid md:grid-cols-3 gap-4">
-            {topics.map((t) => (
-              <div key={t.title} className="glass-card p-5 hover-lift">
-                <h4 className="font-medium mb-3">{t.title}</h4>
-                <Progress value={t.progress} className="h-2 mb-3" />
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">{t.progress}% complete</span>
-                  <Link to="/lesson/1">
-                    <Button size="sm" variant="ghost" className="text-xs">
-                      Continue <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </Link>
+            {userTopics.length > 0 ? (
+              userTopics.map((t) => (
+                <div key={t.id} className="glass-card p-5 hover-lift">
+                  <h4 className="font-medium mb-3">{t.title}</h4>
+                  <Progress value={100} className="h-2 mb-3" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">Generated</span>
+                    <Link to="/topics">
+                      <Button size="sm" variant="ghost" className="text-xs">
+                        View Roadmap <ArrowRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="md:col-span-3 glass-card p-8 text-center border-dashed border-2">
+                <p className="text-muted-foreground mb-4">You haven't generated any topics yet.</p>
+                <Link to="/topics">
+                  <Button className="gradient-bg border-0 text-white">Generate Your First Topic</Button>
+                </Link>
               </div>
-            ))}
+            )}
           </div>
         </motion.div>
 

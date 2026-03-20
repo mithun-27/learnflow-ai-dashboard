@@ -4,41 +4,50 @@ import { Send, Bot, User, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DashboardLayout from "@/components/DashboardLayout";
+import { api } from "@/lib/api";
 
-type Message = { role: "user" | "assistant"; content: string };
-
-const initialMessages: Message[] = [
-  { role: "assistant", content: "Hi! I'm your AI tutor. Ask me anything about the topic you're learning. I'll help explain concepts, provide examples, and guide your understanding." },
-];
-
-const mockResponses = [
-  "Great question! Machine Learning is essentially teaching computers to learn from data. Instead of writing explicit rules, we provide data and let the algorithm find patterns.\n\nThink of it like teaching a child to recognize cats — you show them many pictures of cats, and eventually they learn to identify one on their own.",
-  "Linear regression finds the best-fitting straight line through your data points. The formula is:\n\n**y = mx + b**\n\nWhere:\n- **y** is the predicted value\n- **m** is the slope (how much y changes per unit of x)\n- **b** is the y-intercept\n- **x** is the input feature",
-  "Neural networks are inspired by the human brain. They consist of layers of interconnected nodes (neurons). Each connection has a weight that gets adjusted during training.\n\nThe key components:\n1. **Input layer** — receives the data\n2. **Hidden layers** — process the data\n3. **Output layer** — produces the result",
-];
+type Message = { role: "user" | "assistant"; content: string; reasoning_details?: string };
 
 const AiTutor = () => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // For now, let's assume we are in a specific topic
+  // In a real app, this would come from the route or state
+  const topicId = 1;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, typing]);
 
-  const send = () => {
+  const send = async () => {
     if (!input.trim() || typing) return;
     const userMsg: Message = { role: "user", content: input };
     setMessages(prev => [...prev, userMsg]);
     setInput("");
     setTyping(true);
 
-    setTimeout(() => {
-      const resp = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-      setMessages(prev => [...prev, { role: "assistant", content: resp }]);
+    try {
+      const history = messages.map(m => ({
+        role: m.role,
+        content: m.content,
+        reasoning_details: m.reasoning_details
+      }));
+      
+      const res: any = await api.sendMessage(topicId, input, undefined, history);
+      const assistantMsg: Message = { 
+        role: "assistant", 
+        content: res.answer,
+        reasoning_details: res.reasoning_details
+      };
+      setMessages(prev => [...prev, assistantMsg]);
+    } catch (err) {
+      console.error("Chat failed", err);
+    } finally {
       setTyping(false);
-    }, 1500);
+    }
   };
 
   return (

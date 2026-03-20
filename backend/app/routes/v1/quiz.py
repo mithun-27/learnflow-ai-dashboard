@@ -1,0 +1,23 @@
+from fastapi import APIRouter, Depends, HTTPException
+from app.schemas.task import TaskResponse
+from app.workers.tasks import generate_quiz_task
+from app.routes.v1.auth import get_current_user
+from app.models.lesson import Lesson
+from app.models.user import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database.session import get_db
+
+router = APIRouter()
+
+@router.post("/generate-quiz/{lesson_id}", response_model=TaskResponse)
+async def generate_quiz(
+    lesson_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    lesson = await db.get(Lesson, lesson_id)
+    if not lesson:
+        raise HTTPException(status_code=404, detail="Lesson not found")
+    
+    task = generate_quiz_task.delay(lesson_id)
+    return {"task_id": task.id, "status": "PENDING"}
