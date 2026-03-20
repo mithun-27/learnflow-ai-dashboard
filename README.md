@@ -65,4 +65,4 @@ npm run dev -- --port 8081
 Distributed under the MIT License.
 
 ---
-Built with ❤️ by the LearnFlow AI Team.
+Built with ❤️ by the Zynova AI Team.
