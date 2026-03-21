@@ -3,6 +3,21 @@ console.log("DEBUG: API_URL is", API_URL);
 
 export type TaskStatus = "PENDING" | "SUCCESS" | "FAILURE";
 
+export interface Analytics {
+  lessons_completed: number;
+  quiz_scores: number[];
+  study_streak: number;
+  progress_percentage: number;
+}
+
+export interface Lesson {
+  id: number;
+  topic_id: number;
+  title: string;
+  content: string;
+  order_index: number;
+}
+
 export interface TaskResponse {
   task_id: string;
   status: string;
@@ -16,6 +31,10 @@ export interface RoadmapUnit {
 export interface Roadmap {
   topic: string;
   units: RoadmapUnit[];
+  roadmap_graph?: {
+    nodes: any[];
+    edges: any[];
+  };
 }
 
 export interface Topic {
@@ -40,7 +59,8 @@ class ApiClient {
     return this.token;
   }
 
-  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+
+  public async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const headers = {
       "Content-Type": "application/json",
       ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
@@ -114,7 +134,7 @@ class ApiClient {
   }
 
   // Lessons
-  async getLesson(lessonId: number) {
+  async getLesson(lessonId: number): Promise<Lesson> {
     return this.request(`/lesson/${lessonId}`);
   }
   
@@ -122,6 +142,31 @@ class ApiClient {
     return this.request(`/lesson/generate-lesson/${lessonId}`, {
       method: "POST"
     });
+  }
+
+  async updateRoadmapGraph(topicId: number, nodes: any[], edges: any[]): Promise<Topic> {
+    return this.request(`/roadmap/${topicId}/graph`, {
+      method: "PATCH",
+      body: JSON.stringify({ roadmap_graph: { nodes, edges } }),
+    });
+  }
+
+  async confirmRoadmap(topicId: number, nodes: any[], edges: any[]): Promise<{ message: string }> {
+    return this.request(`/roadmap/${topicId}/confirm`, {
+      method: "POST",
+      body: JSON.stringify({ roadmap_graph: { nodes, edges } }),
+    });
+  }
+
+  async markComplete(lessonId: number, completed: boolean): Promise<any> {
+    return this.request(`/progress/mark-complete`, {
+      method: "POST",
+      body: JSON.stringify({ lesson_id: lessonId, completed }),
+    });
+  }
+
+  async getAnalytics(): Promise<Analytics> {
+    return this.request(`/analytics/`);
   }
 }
 

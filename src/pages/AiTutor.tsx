@@ -1,22 +1,30 @@
 import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Send, Bot, User, BookOpen } from "lucide-react";
+import { Send, Bot, User, BookOpen, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import DashboardLayout from "@/components/DashboardLayout";
 import { api } from "@/lib/api";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 type Message = { role: "user" | "assistant"; content: string; reasoning_details?: string };
 
 const AiTutor = () => {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get context from URL or navigation state
+  const topicId = parseInt(searchParams.get("topicId") || location.state?.topicId || "0");
+  const lessonId = parseInt(searchParams.get("lessonId") || location.state?.lessonId || "0");
+  const topicName = searchParams.get("topicName") || location.state?.topicName || "Selected Topic";
+  const lessonTitle = searchParams.get("lessonTitle") || location.state?.lessonTitle || "Current Module";
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
-
-  // For now, let's assume we are in a specific topic
-  // In a real app, this would come from the route or state
-  const topicId = 1;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,6 +32,11 @@ const AiTutor = () => {
 
   const send = async () => {
     if (!input.trim() || typing) return;
+    if (!topicId) {
+        toast.error("No topic context found. Please select a topic first.");
+        return;
+    }
+    
     const userMsg: Message = { role: "user", content: input };
     setMessages(prev => [...prev, userMsg]);
     setInput("");
@@ -36,15 +49,16 @@ const AiTutor = () => {
         reasoning_details: m.reasoning_details
       }));
       
-      const res: any = await api.sendMessage(topicId, input, undefined, history);
+      const res: any = await api.sendMessage(topicId, input, lessonId || undefined, history);
       const assistantMsg: Message = { 
         role: "assistant", 
-        content: res.answer,
-        reasoning_details: res.reasoning_details
+        content: res.answer || res.response || "I'm analyzing your question...", 
+        reasoning_details: res.reasoning_details || res.reasoning
       };
       setMessages(prev => [...prev, assistantMsg]);
     } catch (err) {
       console.error("Chat failed", err);
+      toast.error("Tutor connection lost. Please try again.");
     } finally {
       setTyping(false);
     }
@@ -54,44 +68,50 @@ const AiTutor = () => {
     <DashboardLayout>
       <div className="flex flex-1 overflow-hidden h-[calc(100vh-3.5rem)]">
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex-1 flex flex-col bg-background/50 backdrop-blur-sm">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {messages.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center opacity-40 grayscale pointer-events-none">
+                    <Bot className="h-16 w-16 mb-4 text-primary" />
+                    <p className="text-sm font-medium">Your AI Tutor is ready to help with {topicName}</p>
+                </div>
+            )}
             {messages.map((msg, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className={`flex gap-4 ${msg.role === "user" ? "justify-end" : ""}`}
               >
                 {msg.role === "assistant" && (
-                  <div className="gradient-bg rounded-lg p-2 h-8 w-8 shrink-0 flex items-center justify-center">
-                    <Bot className="h-4 w-4 text-primary-foreground" />
+                  <div className="gradient-bg rounded-xl p-2.5 h-10 w-10 shrink-0 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <Bot className="h-5 w-5 text-white" />
                   </div>
                 )}
-                <div className={`max-w-lg rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${
+                <div className={`max-w-xl rounded-2xl px-5 py-4 text-sm leading-relaxed shadow-sm border border-border/50 ${
                   msg.role === "user"
-                    ? "bg-primary text-primary-foreground rounded-br-md"
-                    : "bg-muted rounded-bl-md"
+                    ? "bg-primary text-primary-foreground rounded-br-none"
+                    : "bg-card rounded-bl-none"
                 }`}>
                   {msg.content}
                 </div>
                 {msg.role === "user" && (
-                  <div className="bg-muted rounded-lg p-2 h-8 w-8 shrink-0 flex items-center justify-center">
-                    <User className="h-4 w-4" />
+                  <div className="bg-muted rounded-xl p-2.5 h-10 w-10 shrink-0 flex items-center justify-center">
+                    <User className="h-5 w-5" />
                   </div>
                 )}
               </motion.div>
             ))}
             {typing && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
-                <div className="gradient-bg rounded-lg p-2 h-8 w-8 shrink-0 flex items-center justify-center">
-                  <Bot className="h-4 w-4 text-primary-foreground" />
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-4">
+                <div className="gradient-bg rounded-xl p-2.5 h-10 w-10 shrink-0 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                  <Bot className="h-5 w-5 text-white" />
                 </div>
-                <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3">
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-pulse-soft" />
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-pulse-soft" style={{ animationDelay: "0.2s" }} />
-                    <span className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-pulse-soft" style={{ animationDelay: "0.4s" }} />
+                <div className="bg-card rounded-2xl rounded-bl-none px-5 py-4 border border-border/50">
+                  <div className="flex gap-1.5 px-2">
+                    <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                    <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                    <span className="w-2 h-2 bg-primary/40 rounded-full animate-bounce" />
                   </div>
                 </div>
               </motion.div>
@@ -100,34 +120,54 @@ const AiTutor = () => {
           </div>
 
           {/* Input */}
-          <div className="border-t border-border p-4 bg-card">
-            <div className="flex gap-3 max-w-3xl mx-auto">
-              <Input
-                placeholder="Ask your AI tutor about this topic..."
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && send()}
-                className="flex-1"
-              />
-              <Button onClick={send} disabled={!input.trim() || typing} className="gradient-bg border-0 text-primary-foreground">
-                <Send className="h-4 w-4" />
-              </Button>
+          <div className="border-t border-border p-6 bg-card/80 backdrop-blur-md">
+            <div className="flex gap-3 max-w-4xl mx-auto items-center">
+                <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-full h-10 w-10">
+                    <ArrowLeft className="h-5 w-5" />
+                </Button>
+                <div className="relative flex-1">
+                    <Input
+                        placeholder={`Ask about ${topicName}...`}
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                        onKeyDown={e => e.key === "Enter" && send()}
+                        className="h-12 pl-4 pr-12 rounded-2xl bg-muted/50 border-border/50 focus:border-primary/50 transition-all text-sm"
+                    />
+                    <Button 
+                        onClick={send} 
+                        disabled={!input.trim() || typing} 
+                        className="absolute right-1 top-1 h-10 w-10 p-0 rounded-xl gradient-bg border-0 text-white hover:scale-105 transition-transform"
+                    >
+                        {typing ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                    </Button>
+                </div>
             </div>
           </div>
         </div>
 
         {/* Context Panel */}
-        <aside className="w-72 border-l border-border p-6 hidden lg:block bg-card">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4">Context</h3>
-          <div className="glass-card p-4 space-y-3">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Current Topic</span>
+        <aside className="w-80 border-l border-border p-8 hidden lg:flex flex-col bg-card/50 backdrop-blur-sm">
+          <h3 className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">Learning Context</h3>
+          <div className="space-y-6">
+            <div className="glass-card p-5 rounded-2xl border border-primary/10 bg-primary/5 shadow-inner">
+                <div className="flex items-center gap-3 mb-3">
+                    <BookOpen className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">Active Topic</span>
+                </div>
+                <p className="font-bold text-foreground leading-tight">{topicName}</p>
             </div>
-            <p className="text-sm text-muted-foreground">Machine Learning</p>
-            <div className="text-xs text-muted-foreground">
-              <p className="font-medium text-foreground mb-1">Current Lesson</p>
-              <p>What is Machine Learning?</p>
+
+            {lessonId > 0 && (
+                <div className="glass-card p-5 rounded-2xl border border-accent/10 bg-accent/5">
+                    <div className="text-xs font-bold uppercase tracking-wider text-accent mb-3">Current Module</div>
+                    <p className="text-sm font-medium text-foreground">{lessonTitle}</p>
+                </div>
+            )}
+
+            <div className="mt-auto pt-10">
+                <p className="text-[10px] text-muted-foreground font-medium leading-relaxed uppercase tracking-widest opacity-60">
+                    Our AI tutor has processed your full roadmap and is ready to answer specific technical questions.
+                </p>
             </div>
           </div>
         </aside>

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FileText, Upload, X, CheckCircle2, Sparkles, BookOpen, ChevronRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 import { api, Topic, Roadmap } from "@/lib/api";
@@ -16,6 +16,7 @@ const TopicGenerator = () => {
   const [uploadedFile, setUploadedFile] = useState<{ name: string; size: string } | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [savedTopics, setSavedTopics] = useState<Topic[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTopics();
@@ -42,7 +43,7 @@ const TopicGenerator = () => {
           // Load the roadmap from the result or fetch it
           const res = await api.getTopics();
           const newTopic = res.find(t => t.title === topicName);
-          if (newTopic) loadTopic(newTopic.id);
+          if (newTopic) navigate(`/roadmap/${newTopic.id}`);
         } else if (status.status === "FAILURE") {
           clearInterval(interval);
           setLoading(false);
@@ -230,7 +231,7 @@ const TopicGenerator = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * i }}
-                  onClick={() => loadTopic(item.id)}
+                  onClick={() => navigate(`/roadmap/${item.id}`)}
                   className="group relative glass-card p-5 cursor-pointer border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-12 translate-x-12 blur-2xl group-hover:bg-primary/10 transition-all" />

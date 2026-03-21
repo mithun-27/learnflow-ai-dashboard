@@ -4,14 +4,18 @@ from typing import List, Optional
 
 class TopicBase(BaseModel):
     title: Optional[str] = None
+    roadmap_graph: Optional[dict] = None
 
 class TopicCreate(TopicBase):
     topic: str  # The topic to generate roadmap for
 
+class TopicUpdate(BaseModel):
+    roadmap_graph: dict
+
+class RoadmapConfirmRequest(BaseModel):
+    roadmap_graph: dict
+
 class Topic(TopicBase):
-    id: int
-    user_id: int
-    created_at: datetime
     class Config:
         from_attributes = True
 

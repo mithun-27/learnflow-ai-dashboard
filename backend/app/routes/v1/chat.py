@@ -30,7 +30,7 @@ async def chat_with_tutor(
     
     # Construct messages with history
     messages = [
-        {"role": "system", "content": f"You are a helpful AI tutor for Zynova AI. Use the following context to answer the user's question:\n{context}"}
+        {"role": "system", "content": f"You are a helpful AI tutor for Xynova AI. Use the following context to answer the user's question:\n{context}"}
     ]
     
     # Add history

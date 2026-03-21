@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "Zynova AI"
+    PROJECT_NAME: str = "Xynova AI"
     VERSION: str = "1.0.0"
     API_V1_STR: str = "/api/v1"
 
@@ -37,4 +37,4 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
-logger = logging.getLogger("zynova_ai")
+logger = logging.getLogger("xynova_ai")

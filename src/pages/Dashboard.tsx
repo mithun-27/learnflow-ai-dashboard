@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Flame, Trophy, TrendingUp, ArrowRight } from "lucide-react";
+import { BookOpen, Flame, Trophy, TrendingUp, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -7,19 +8,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import { ActivityCalendar } from "react-activity-calendar";
 import { useTheme } from "next-themes";
 import { subDays, format } from "date-fns";
-
-const stats = [
-  { label: "Topics Learning", value: "8", icon: BookOpen, color: "bg-primary/10 text-primary" },
-  { label: "Lessons Completed", value: "42", icon: TrendingUp, color: "bg-success/10 text-success" },
-  { label: "Study Streak", value: "12 days", icon: Flame, color: "bg-warning/10 text-warning" },
-  { label: "Avg Quiz Score", value: "87%", icon: Trophy, color: "bg-accent/10 text-accent" },
-];
-
-const topics = [
-  { title: "Machine Learning", progress: 65 },
-  { title: "Artificial Intelligence", progress: 40 },
-  { title: "Python Programming", progress: 80 },
-];
+import { api, Topic, Analytics } from "@/lib/api";
 
 const generateCalendarData = () => {
   const data = [];
@@ -48,28 +37,50 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08, duration: 0.4 } })
 };
 
-import { useEffect, useState } from "react";
-import { api, Topic } from "@/lib/api";
-
 const Dashboard = () => {
   const { theme, systemTheme } = useTheme();
   const [userTopics, setUserTopics] = useState<Topic[]>([]);
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setLoading(true);
       try {
-        const res = await api.getTopics();
-        setUserTopics(res);
+        const [topicsRes, analyticsRes] = await Promise.all([
+          api.getTopics(),
+          api.getAnalytics()
+        ]);
+        setUserTopics(topicsRes);
+        setAnalytics(analyticsRes);
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchDashboardData();
   }, []);
 
-  // Determine actual theme used for ActivityCalendar
   const resolvedTheme = theme === 'system' ? systemTheme : theme;
   const isDark = resolvedTheme === 'dark';
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="h-full w-full flex items-center justify-center p-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const stats = [
+    { label: "Topics Learning", value: userTopics.length.toString(), icon: BookOpen, color: "bg-primary/10 text-primary" },
+    { label: "Lessons Completed", value: analytics?.lessons_completed.toString() || "0", icon: TrendingUp, color: "bg-success/10 text-success" },
+    { label: "Study Streak", value: `${analytics?.study_streak || 0} days`, icon: Flame, color: "bg-warning/10 text-warning" },
+    { label: "Progress", value: `${Math.round(analytics?.progress_percentage || 0)}%`, icon: Trophy, color: "bg-accent/10 text-accent" },
+  ];
 
   return (
     <DashboardLayout>
@@ -83,7 +94,7 @@ const Dashboard = () => {
               <div className={`rounded-lg p-2 w-fit mb-3 ${s.color}`}>
                 <s.icon className="h-5 w-5" />
               </div>
-              <p className="text-2xl font-bold">{s.label === "Topics Learning" ? userTopics.length : s.value}</p>
+              <p className="text-2xl font-bold">{s.value}</p>
               <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
             </motion.div>
           ))}
@@ -97,10 +108,10 @@ const Dashboard = () => {
               userTopics.map((t) => (
                 <div key={t.id} className="glass-card p-5 hover-lift">
                   <h4 className="font-medium mb-3">{t.title}</h4>
-                  <Progress value={100} className="h-2 mb-3" />
+                  <Progress value={analytics?.progress_percentage || 0} className="h-2 mb-3" />
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">Generated</span>
-                    <Link to="/topics">
+                    <span className="text-xs text-muted-foreground">{Math.round(analytics?.progress_percentage || 0)}% Completed</span>
+                    <Link to={`/roadmap/${t.id}`}>
                       <Button size="sm" variant="ghost" className="text-xs">
                         View Roadmap <ArrowRight className="ml-1 h-3 w-3" />
                       </Button>

@@ -13,9 +13,7 @@ import { ThemeToggle } from "./ThemeToggle";
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "My Topics", url: "/topics", icon: BookOpen },
-  { title: "AI Tutor", url: "/tutor", icon: MessageSquare },
-  { title: "Quizzes", url: "/quiz", icon: HelpCircle },
-  { title: "Knowledge Graph", url: "/knowledge-graph", icon: Network },
+  { title: "Roadmap", url: "/roadmap", icon: Network },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Settings", url: "/settings", icon: Settings },
 ];

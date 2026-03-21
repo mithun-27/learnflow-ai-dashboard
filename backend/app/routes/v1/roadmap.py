@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.schemas.topic import TopicCreate, Topic as TopicSchema, Roadmap
+from app.schemas.topic import TopicCreate, Topic as TopicSchema, Roadmap, TopicUpdate, RoadmapConfirmRequest
 from app.schemas.task import TaskResponse
 from app.workers.tasks import generate_roadmap_task
 from app.routes.v1.auth import get_current_user
@@ -38,6 +38,69 @@ async def list_topics(
     result = await db.execute(select(Topic).where(Topic.user_id == current_user.id))
     return result.scalars().all()
 
+@router.patch("/{topic_id}/graph", response_model=TopicSchema)
+async def update_roadmap_graph(
+    topic_id: int,
+    graph_in: TopicUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    topic = await db.get(Topic, topic_id)
+    if not topic or topic.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Topic not found")
+    
+    topic.roadmap_graph = graph_in.roadmap_graph
+    await db.commit()
+    await db.refresh(topic)
+    return topic
+
+@router.post("/{topic_id}/confirm")
+async def confirm_roadmap(
+    topic_id: int,
+    confirm_in: RoadmapConfirmRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    from app.workers.tasks import generate_lesson_task, generate_quiz_task
+    
+    topic = await db.get(Topic, topic_id)
+    if not topic or topic.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Topic not found")
+    
+    # Save the final graph
+    topic.roadmap_graph = confirm_in.roadmap_graph
+    await db.commit()
+    
+    # Identify lesson nodes and trigger generation
+    nodes = confirm_in.roadmap_graph.get("nodes", [])
+    lessons_triggered = 0
+    
+    for node in nodes:
+        node_id = node.get("id", "")
+        if node_id.startswith("lesson_") or node_id.startswith("custom_"):
+            lesson_title = node.get("data", {}).get("label", "Untitled Lesson")
+            
+            # Check if lesson already exists
+            res = await db.execute(select(Lesson).where(Lesson.topic_id == topic_id, Lesson.title == lesson_title))
+            lesson = res.scalars().first()
+            
+            if not lesson:
+                lesson = Lesson(topic_id=topic_id, title=lesson_title)
+                db.add(lesson)
+                await db.flush()
+            
+            # Trigger generation task if content is empty
+            if not lesson.content:
+                # Use a chain or just fire both (order matters for quiz though)
+                # For simplicity, we fire generate_lesson first
+                generate_lesson_task.delay(lesson.id)
+                # generate_quiz_task needs lesson content, so we should ideally chain them 
+                # or have generate_lesson trigger generate_quiz upon completion.
+                lessons_triggered += 1
+                
+    await db.commit()
+    return {"message": f"Roadmap confirmed! Architecting {lessons_triggered} lessons and related content..."}
+
 @router.get("/{topic_id}", response_model=Roadmap)
 async def get_roadmap(
     topic_id: int,
@@ -62,4 +125,8 @@ async def get_roadmap(
         units_dict[unit_title].append(lesson_name)
     
     units = [{"title": k, "lessons": v} for k, v in units_dict.items()]
-    return {"topic": topic.title, "units": units}
+    return {
+        "topic": topic.title, 
+        "units": units,
+        "roadmap_graph": topic.roadmap_graph
+    }

@@ -63,4 +63,4 @@ app.include_router(tasks.router, prefix=f"{settings.API_V1_STR}/tasks", tags=["t
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to Zynova AI Backend"}
+    return {"message": "Welcome to Xynova AI Backend"}

@@ -1,26 +1,16 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { BookOpen, Trophy, Clock, Flame } from "lucide-react";
+import { BookOpen, Trophy, Clock, Flame, Loader2 } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import {
   BarChart, Bar, LineChart, Line, AreaChart, Area,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from "recharts";
-
-const metrics = [
-  { label: "Total Lessons", value: "42", icon: BookOpen, color: "bg-primary/10 text-primary" },
-  { label: "Avg Quiz Score", value: "87%", icon: Trophy, color: "bg-success/10 text-success" },
-  { label: "Study Hours", value: "28h", icon: Clock, color: "bg-accent/10 text-accent" },
-  { label: "Current Streak", value: "12 days", icon: Flame, color: "bg-warning/10 text-warning" },
-];
+import { api, Analytics as AnalyticsType } from "@/lib/api";
 
 const lessonsData = [
-  { week: "W1", lessons: 5 }, { week: "W2", lessons: 8 }, { week: "W3", lessons: 6 },
-  { week: "W4", lessons: 12 }, { week: "W5", lessons: 9 }, { week: "W6", lessons: 15 },
-];
-
-const quizData = [
-  { quiz: "Q1", score: 72 }, { quiz: "Q2", score: 85 }, { quiz: "Q3", score: 68 },
-  { quiz: "Q4", score: 90 }, { quiz: "Q5", score: 88 }, { quiz: "Q6", score: 95 },
+  { week: "W1", lessons: 1 }, { week: "W2", lessons: 2 }, { week: "W3", lessons: 1 },
+  { week: "W4", lessons: 4 }, { week: "W5", lessons: 3 }, { week: "W6", lessons: 5 },
 ];
 
 const streakData = [
@@ -42,6 +32,46 @@ const fadeUp = {
 };
 
 const Analytics = () => {
+  const [analytics, setAnalytics] = useState<AnalyticsType | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      setLoading(true);
+      try {
+        const data = await api.getAnalytics();
+        setAnalytics(data);
+      } catch (err) {
+        console.error("Failed to fetch analytics", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAnalytics();
+  }, []);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="h-full w-full flex items-center justify-center p-20">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const metrics = [
+    { label: "Total Lessons", value: analytics?.lessons_completed.toString() || "0", icon: BookOpen, color: "bg-primary/10 text-primary" },
+    { label: "Completion Rate", value: `${Math.round(analytics?.progress_percentage || 0)}%`, icon: Trophy, color: "bg-success/10 text-success" },
+    { label: "Study Streak", value: `${analytics?.study_streak || 0} days`, icon: Flame, color: "bg-warning/10 text-warning" },
+    { label: "Points Earned", value: "340", icon: Clock, color: "bg-accent/10 text-accent" },
+  ];
+
+  const quizData = (analytics?.quiz_scores || [0]).map((score, i) => ({
+    quiz: `Q${i + 1}`,
+    score
+  }));
+
   return (
     <DashboardLayout>
       <div className="p-6 max-w-6xl mx-auto space-y-8">
@@ -63,7 +93,7 @@ const Analytics = () => {
         {/* Charts */}
         <div className="grid lg:grid-cols-2 gap-6">
           <motion.div variants={fadeUp} custom={4} initial="hidden" animate="visible" className="glass-card p-6">
-            <h3 className="font-semibold mb-4 text-sm">Lessons Completed Over Time</h3>
+            <h3 className="font-semibold mb-4 text-sm">Learning Velocity</h3>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={lessonsData}>
@@ -78,7 +108,7 @@ const Analytics = () => {
           </motion.div>
 
           <motion.div variants={fadeUp} custom={5} initial="hidden" animate="visible" className="glass-card p-6">
-            <h3 className="font-semibold mb-4 text-sm">Quiz Scores</h3>
+            <h3 className="font-semibold mb-4 text-sm">Quiz Performance</h3>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={quizData}>
@@ -93,7 +123,7 @@ const Analytics = () => {
           </motion.div>
 
           <motion.div variants={fadeUp} custom={6} initial="hidden" animate="visible" className="glass-card p-6 lg:col-span-2">
-            <h3 className="font-semibold mb-4 text-sm">Study Time (minutes)</h3>
+            <h3 className="font-semibold mb-4 text-sm">Study Time Distribution (Daily Avg)</h3>
             <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={streakData}>

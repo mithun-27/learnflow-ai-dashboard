@@ -1,6 +1,6 @@
-# LearnFlow AI
+# Xynova.ai
 
-**LearnFlow AI** is a state-of-the-art personalized learning platform that engineers custom roadmaps for any subject. Powered by advanced AI reasoning, it provides structured modules, interactive tutoring, and progress tracking to help students master complex topics efficiently.
+**Xynova.ai** is a state-of-the-art personalized learning platform that engineers custom roadmaps for any subject. Powered by advanced AI reasoning, it provides structured modules, interactive tutoring, and progress tracking to help students master complex topics efficiently.
 
 ## ✨ Features
 
@@ -65,4 +65,4 @@ npm run dev -- --port 8081
 Distributed under the MIT License.
 
 ---
-Built with ❤️ by the Zynova AI Team.
+Built with ❤️ by the Xynova AI Team.

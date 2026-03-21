@@ -14,25 +14,64 @@ def run_async(coro):
 @celery_app.task(name="generate_roadmap_task")
 def generate_roadmap_task(user_id: int, topic_title: str):
     async def _logic():
-        roadmap = await ai_service.generate_roadmap(topic_title)
-        async with AsyncSessionLocal() as db:
-            # Create Topic
-            new_topic = Topic(user_id=user_id, title=topic_title)
-            db.add(new_topic)
-            await db.flush()
+            # Generate default roadmap_graph
+            nodes = []
+            edges = []
             
-            # Create Lessons
-            order = 0
-            for unit in roadmap.units:
-                for lesson_name in unit.lessons:
+            # Root node
+            nodes.append({
+                "id": "root",
+                "position": {"x": 400, "y": 0},
+                "data": {"label": topic_title},
+                "className": "bg-primary text-primary-foreground border-none rounded-xl px-5 py-3 font-semibold text-sm w-auto shadow-md"
+            })
+            
+            y_offset = 150
+            x_start = 100
+            x_gap = 300
+            
+            current_order = 0
+            for i, unit in enumerate(roadmap.units):
+                unit_id = f"unit_{i}"
+                nodes.append({
+                    "id": unit_id,
+                    "position": {"x": x_start + (i * x_gap), "y": y_offset},
+                    "data": {"label": unit.title},
+                    "className": "bg-sidebar-accent border-2 border-primary/40 rounded-xl px-4 py-2 text-[13px] text-foreground font-medium shadow-sm"
+                })
+                edges.append({
+                    "id": f"e-root-{unit_id}",
+                    "source": "root",
+                    "target": unit_id,
+                    "style": {"stroke": "hsl(var(--primary))", "strokeWidth": 2}
+                })
+                
+                # Add lessons as children
+                for j, lesson_name in enumerate(unit.lessons):
+                    lesson_id = f"lesson_{current_order}"
+                    nodes.append({
+                        "id": lesson_id,
+                        "position": {"x": x_start + (i * x_gap), "y": y_offset + 100 + (j * 80)},
+                        "data": {"label": lesson_name},
+                        "className": "bg-card border border-border rounded-lg px-3.5 py-2 text-xs text-foreground shadow-sm"
+                    })
+                    edges.append({
+                        "id": f"e-{unit_id}-{lesson_id}",
+                        "source": unit_id,
+                        "target": lesson_id,
+                        "style": {"stroke": "hsl(var(--primary) / 0.5)"}
+                    })
+                    
+                    # Create Lesson record
                     new_lesson = Lesson(
                         topic_id=new_topic.id,
                         title=f"{unit.title}: {lesson_name}",
-                        order_index=order
+                        order_index=current_order
                     )
                     db.add(new_lesson)
-                    order += 1
+                    current_order += 1
             
+            new_topic.roadmap_graph = {"nodes": nodes, "edges": edges}
             await db.commit()
             return {"topic_id": new_topic.id, "roadmap": roadmap.model_dump()}
 
@@ -51,6 +90,11 @@ def generate_lesson_task(lesson_id: int):
             
             lesson.content = content
             await db.commit()
+            
+            # Trigger quiz generation as related content
+            from app.workers.tasks import generate_quiz_task
+            generate_quiz_task.delay(lesson.id)
+            
             return content
 
     return run_async(_logic())
