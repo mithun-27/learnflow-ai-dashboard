@@ -72,6 +72,16 @@ class ApiClient {
       headers,
     });
 
+    if (response.status === 401) {
+      // Token likely expired or invalid
+      this.setToken(null);
+      if (window.location.pathname !== "/auth" && window.location.pathname !== "/") {
+        window.location.href = "/auth";
+      }
+      const error = await response.json().catch(() => ({ detail: "Session expired. Please log in again." }));
+      throw new Error(error.detail || "Unauthorized");
+    }
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ detail: "Unknown error" }));
       throw new Error(error.detail || "API request failed");
@@ -167,6 +177,12 @@ class ApiClient {
 
   async getAnalytics(): Promise<Analytics> {
     return this.request(`/analytics/`);
+  }
+
+  async deleteTopic(topicId: number): Promise<{ message: string }> {
+    return this.request(`/roadmap/delete/${topicId}`, {
+      method: "DELETE",
+    });
   }
 }
 

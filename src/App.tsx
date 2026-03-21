@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import TopicGenerator from "./pages/TopicGenerator";
@@ -34,6 +34,7 @@ const App = () => (
             <Route path="/lesson/:lessonId" element={<LessonReader />} />
             <Route path="/tutor" element={<AiTutor />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/roadmap" element={<Navigate to="/topics" replace />} />
             <Route path="/roadmap/:topicId" element={<RoadmapView />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/settings" element={<Settings />} />

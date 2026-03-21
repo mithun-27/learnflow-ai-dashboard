@@ -14,7 +14,20 @@ def run_async(coro):
 @celery_app.task(name="generate_roadmap_task")
 def generate_roadmap_task(user_id: int, topic_title: str):
     async def _logic():
-            # Generate default roadmap_graph
+        async with AsyncSessionLocal() as db:
+            # 1. Generate the roadmap structure via AI
+            roadmap = await ai_service.generate_roadmap(topic_title)
+            
+            # 2. Create the Topic record
+            new_topic = Topic(
+                user_id=user_id,
+                title=topic_title,
+                roadmap_graph={} # Placeholder
+            )
+            db.add(new_topic)
+            await db.flush() # Get the ID
+            
+            # 3. Generate default roadmap_graph
             nodes = []
             edges = []
             
@@ -45,23 +58,8 @@ def generate_roadmap_task(user_id: int, topic_title: str):
                     "target": unit_id,
                     "style": {"stroke": "hsl(var(--primary))", "strokeWidth": 2}
                 })
-                
                 # Add lessons as children
                 for j, lesson_name in enumerate(unit.lessons):
-                    lesson_id = f"lesson_{current_order}"
-                    nodes.append({
-                        "id": lesson_id,
-                        "position": {"x": x_start + (i * x_gap), "y": y_offset + 100 + (j * 80)},
-                        "data": {"label": lesson_name},
-                        "className": "bg-card border border-border rounded-lg px-3.5 py-2 text-xs text-foreground shadow-sm"
-                    })
-                    edges.append({
-                        "id": f"e-{unit_id}-{lesson_id}",
-                        "source": unit_id,
-                        "target": lesson_id,
-                        "style": {"stroke": "hsl(var(--primary) / 0.5)"}
-                    })
-                    
                     # Create Lesson record
                     new_lesson = Lesson(
                         topic_id=new_topic.id,
@@ -69,6 +67,22 @@ def generate_roadmap_task(user_id: int, topic_title: str):
                         order_index=current_order
                     )
                     db.add(new_lesson)
+                    await db.flush() # Get lesson ID
+                    
+                    lesson_node_id = f"lesson_{current_order}"
+                    nodes.append({
+                        "id": lesson_node_id,
+                        "position": {"x": x_start + (i * x_gap), "y": y_offset + 100 + (j * 80)},
+                        "data": {"label": lesson_name, "lessonId": new_lesson.id},
+                        "className": "bg-card border border-border rounded-lg px-3.5 py-2 text-xs text-foreground shadow-sm"
+                    })
+                    edges.append({
+                        "id": f"e-{unit_id}-{lesson_node_id}",
+                        "source": unit_id,
+                        "target": lesson_node_id,
+                        "style": {"stroke": "hsl(var(--primary) / 0.5)"}
+                    })
+                    
                     current_order += 1
             
             new_topic.roadmap_graph = {"nodes": nodes, "edges": edges}

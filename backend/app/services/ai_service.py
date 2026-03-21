@@ -14,7 +14,7 @@ class AIService:
             "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
             "Content-Type": "application/json",
         }
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             response = await client.post(OPENROUTER_URL, headers=headers, json=payload)
             response.raise_for_status()
             return response.json()
@@ -37,7 +37,6 @@ class AIService:
         payload = {
             "model": settings.AI_MODEL,
             "messages": [{"role": "user", "content": prompt}],
-            "reasoning": {"enabled": True},
             "response_format": {"type": "json_object"}
         }
         data = await AIService._post_request(payload)
@@ -49,8 +48,7 @@ class AIService:
         prompt = f"Write a detailed educational lesson about '{lesson_title}' in the context of '{topic}'. Use Markdown."
         payload = {
             "model": settings.AI_MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "reasoning": {"enabled": True}
+            "messages": [{"role": "user", "content": prompt}]
         }
         data = await AIService._post_request(payload)
         return data['choices'][0]['message']['content']
@@ -61,7 +59,6 @@ class AIService:
         payload = {
             "model": settings.AI_MODEL,
             "messages": [{"role": "user", "content": prompt}],
-            "reasoning": {"enabled": True},
             "response_format": {"type": "json_object"}
         }
         data = await AIService._post_request(payload)
@@ -72,14 +69,12 @@ class AIService:
     async def get_chat_response(messages: List[dict]) -> dict:
         payload = {
             "model": settings.AI_MODEL,
-            "messages": messages,
-            "reasoning": {"enabled": True}
+            "messages": messages
         }
         data = await AIService._post_request(payload)
         message = data['choices'][0]['message']
         return {
-            "content": message.get("content"),
-            "reasoning_details": message.get("reasoning_details")
+            "content": message.get("content")
         }
 
 ai_service = AIService()

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FileText, Upload, X, CheckCircle2, Sparkles, BookOpen, ChevronRight, Loader2 } from "lucide-react";
+import { FileText, Upload, X, CheckCircle2, Sparkles, BookOpen, ChevronRight, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { toast } from "sonner";
 import { api, Topic, Roadmap } from "@/lib/api";
@@ -18,9 +18,13 @@ const TopicGenerator = () => {
   const [savedTopics, setSavedTopics] = useState<Topic[]>([]);
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   useEffect(() => {
     fetchTopics();
-  }, []);
+    // Clear roadmap preview when arriving at /topics
+    setRoadmap(null);
+  }, [location.pathname]);
 
   const fetchTopics = async () => {
     try {
@@ -66,6 +70,19 @@ const TopicGenerator = () => {
     } catch (err: any) {
       toast.error(err.message);
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (e: React.MouseEvent, topicId: number) => {
+    e.stopPropagation();
+    if (!confirm("Are you sure you want to delete this topic and all its progress?")) return;
+    
+    try {
+      await api.deleteTopic(topicId);
+      toast.success("Topic deleted successfully");
+      fetchTopics();
+    } catch (err: any) {
+      toast.error(err.message || "Failed to delete topic");
     }
   };
 
@@ -236,16 +253,26 @@ const TopicGenerator = () => {
                 >
                   <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -translate-y-12 translate-x-12 blur-2xl group-hover:bg-primary/10 transition-all" />
 
+                  {/* Delete Button */}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={(e) => handleDelete(e, item.id)}
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive z-20 transition-all"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+
                   <div className="relative z-10 flex flex-col h-full">
                     <h3 className="font-bold mb-2 group-hover:text-primary transition-colors line-clamp-1">{item.title}</h3>
                     <div className="text-xs text-muted-foreground mb-4">Course available</div>
 
-                    <div className="mt-auto space-y-2">
-                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                        <span>Status</span>
-                        <span>Complete</span>
+                    <div className="mt-auto space-y-3">
+                      <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors">
+                        <span>View Roadmap</span>
+                        <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                       </div>
-                      <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                      <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `100%` }}
@@ -262,11 +289,41 @@ const TopicGenerator = () => {
         )}
 
         {loading && (
-          <div className="glass-card p-12 text-center max-w-3xl mx-auto border-dashed border-2 border-border animate-pulse">
-            <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
-            <h3 className="text-lg font-bold mb-1">Architecting Roadmap...</h3>
-            <p className="text-sm text-muted-foreground">Analyzing topic depth and structuring interactive modules.</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative glass-card p-12 text-center max-w-3xl mx-auto border border-primary/20 bg-primary/5 shadow-2xl shadow-primary/10 overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -translate-y-16 translate-x-16 blur-3xl animate-pulse" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full translate-y-16 -translate-x-16 blur-3xl animate-pulse" />
+            
+            <div className="relative z-10">
+              <div className="relative w-16 h-16 mx-auto mb-6">
+                <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-ping" />
+                <div className="relative rounded-full bg-primary/10 p-4 flex items-center justify-center border border-primary/20">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              </div>
+              
+              <h3 className="text-2xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
+                Architecting Your Roadmap
+              </h3>
+              <p className="text-sm text-muted-foreground max-w-[400px] mx-auto italic leading-relaxed">
+                Analyzing topic depth, extracting core concepts, and structuring interactive modules for your journey.
+              </p>
+              
+              <div className="mt-8 flex justify-center gap-1.5">
+                {[0, 1, 2, 3].map((i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ y: [0, -6, 0], opacity: [0.3, 1, 0.3] }}
+                    transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.15 }}
+                    className="w-1.5 h-1.5 rounded-full bg-primary"
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
         )}
 
         <AnimatePresence>

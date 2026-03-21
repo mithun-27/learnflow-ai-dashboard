@@ -14,5 +14,5 @@ class Lesson(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     topic = relationship("Topic", back_populates="lessons")
-    quizzes = relationship("Quiz", back_populates="lesson")
-    progress = relationship("Progress", back_populates="lesson")
+    quizzes = relationship("Quiz", back_populates="lesson", cascade="all, delete-orphan")
+    progress = relationship("Progress", back_populates="lesson", cascade="all, delete-orphan")

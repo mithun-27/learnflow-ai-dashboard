@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 
 class TopicBase(BaseModel):
+    id: Optional[int] = None
     title: Optional[str] = None
     roadmap_graph: Optional[dict] = None
 
@@ -26,3 +27,4 @@ class RoadmapUnit(BaseModel):
 class Roadmap(BaseModel):
     topic: str
     units: List[RoadmapUnit]
+    roadmap_graph: Optional[dict] = None

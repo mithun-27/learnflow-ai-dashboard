@@ -1,0 +1,1264 @@
+﻿{
+    "openapi":  "3.1.0",
+    "info":  {
+                 "title":  "Xynova AI",
+                 "version":  "1.0.0"
+             },
+    "paths":  {
+                  "/api/v1/auth/register":  {
+                                                "post":  {
+                                                             "tags":  [
+                                                                          "auth"
+                                                                      ],
+                                                             "summary":  "Register",
+                                                             "operationId":  "register_api_v1_auth_register_post",
+                                                             "requestBody":  {
+                                                                                 "content":  {
+                                                                                                 "application/json":  {
+                                                                                                                          "schema":  {
+                                                                                                                                         "$ref":  "#/components/schemas/UserCreate"
+                                                                                                                                     }
+                                                                                                                      }
+                                                                                             },
+                                                                                 "required":  true
+                                                                             },
+                                                             "responses":  {
+                                                                               "200":  {
+                                                                                           "description":  "Successful Response",
+                                                                                           "content":  {
+                                                                                                           "application/json":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/User"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                       }
+                                                                                       },
+                                                                               "422":  {
+                                                                                           "description":  "Validation Error",
+                                                                                           "content":  {
+                                                                                                           "application/json":  {
+                                                                                                                                    "schema":  {
+                                                                                                                                                   "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                               }
+                                                                                                                                }
+                                                                                                       }
+                                                                                       }
+                                                                           }
+                                                         }
+                                            },
+                  "/api/v1/auth/login":  {
+                                             "post":  {
+                                                          "tags":  [
+                                                                       "auth"
+                                                                   ],
+                                                          "summary":  "Login",
+                                                          "operationId":  "login_api_v1_auth_login_post",
+                                                          "requestBody":  {
+                                                                              "content":  {
+                                                                                              "application/x-www-form-urlencoded":  {
+                                                                                                                                        "schema":  {
+                                                                                                                                                       "$ref":  "#/components/schemas/Body_login_api_v1_auth_login_post"
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                          },
+                                                                              "required":  true
+                                                                          },
+                                                          "responses":  {
+                                                                            "200":  {
+                                                                                        "description":  "Successful Response",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/Token"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    },
+                                                                            "422":  {
+                                                                                        "description":  "Validation Error",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    }
+                                                                        }
+                                                      }
+                                         },
+                  "/api/v1/roadmap/generate-roadmap":  {
+                                                           "post":  {
+                                                                        "tags":  [
+                                                                                     "roadmap"
+                                                                                 ],
+                                                                        "summary":  "Generate Roadmap",
+                                                                        "operationId":  "generate_roadmap_api_v1_roadmap_generate_roadmap_post",
+                                                                        "requestBody":  {
+                                                                                            "content":  {
+                                                                                                            "application/json":  {
+                                                                                                                                     "schema":  {
+                                                                                                                                                    "$ref":  "#/components/schemas/TopicCreate"
+                                                                                                                                                }
+                                                                                                                                 }
+                                                                                                        },
+                                                                                            "required":  true
+                                                                                        },
+                                                                        "responses":  {
+                                                                                          "200":  {
+                                                                                                      "description":  "Successful Response",
+                                                                                                      "content":  {
+                                                                                                                      "application/json":  {
+                                                                                                                                               "schema":  {
+                                                                                                                                                              "$ref":  "#/components/schemas/TaskResponse"
+                                                                                                                                                          }
+                                                                                                                                           }
+                                                                                                                  }
+                                                                                                  },
+                                                                                          "422":  {
+                                                                                                      "description":  "Validation Error",
+                                                                                                      "content":  {
+                                                                                                                      "application/json":  {
+                                                                                                                                               "schema":  {
+                                                                                                                                                              "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                          }
+                                                                                                                                           }
+                                                                                                                  }
+                                                                                                  }
+                                                                                      },
+                                                                        "security":  [
+                                                                                         {
+                                                                                             "OAuth2PasswordBearer":  [
+
+                                                                                                                      ]
+                                                                                         }
+                                                                                     ]
+                                                                    }
+                                                       },
+                  "/api/v1/roadmap/":  {
+                                           "get":  {
+                                                       "tags":  [
+                                                                    "roadmap"
+                                                                ],
+                                                       "summary":  "List Topics",
+                                                       "operationId":  "list_topics_api_v1_roadmap__get",
+                                                       "responses":  {
+                                                                         "200":  {
+                                                                                     "description":  "Successful Response",
+                                                                                     "content":  {
+                                                                                                     "application/json":  {
+                                                                                                                              "schema":  {
+                                                                                                                                             "items":  {
+                                                                                                                                                           "$ref":  "#/components/schemas/Topic"
+                                                                                                                                                       },
+                                                                                                                                             "type":  "array",
+                                                                                                                                             "title":  "Response List Topics Api V1 Roadmap  Get"
+                                                                                                                                         }
+                                                                                                                          }
+                                                                                                 }
+                                                                                 }
+                                                                     },
+                                                       "security":  [
+                                                                        {
+                                                                            "OAuth2PasswordBearer":  [
+
+                                                                                                     ]
+                                                                        }
+                                                                    ]
+                                                   }
+                                       },
+                  "/api/v1/roadmap/{topic_id}/graph":  {
+                                                           "patch":  {
+                                                                         "tags":  [
+                                                                                      "roadmap"
+                                                                                  ],
+                                                                         "summary":  "Update Roadmap Graph",
+                                                                         "operationId":  "update_roadmap_graph_api_v1_roadmap__topic_id__graph_patch",
+                                                                         "security":  [
+                                                                                          {
+                                                                                              "OAuth2PasswordBearer":  [
+
+                                                                                                                       ]
+                                                                                          }
+                                                                                      ],
+                                                                         "parameters":  [
+                                                                                            {
+                                                                                                "name":  "topic_id",
+                                                                                                "in":  "path",
+                                                                                                "required":  true,
+                                                                                                "schema":  {
+                                                                                                               "type":  "integer",
+                                                                                                               "title":  "Topic Id"
+                                                                                                           }
+                                                                                            }
+                                                                                        ],
+                                                                         "requestBody":  {
+                                                                                             "required":  true,
+                                                                                             "content":  {
+                                                                                                             "application/json":  {
+                                                                                                                                      "schema":  {
+                                                                                                                                                     "$ref":  "#/components/schemas/TopicUpdate"
+                                                                                                                                                 }
+                                                                                                                                  }
+                                                                                                         }
+                                                                                         },
+                                                                         "responses":  {
+                                                                                           "200":  {
+                                                                                                       "description":  "Successful Response",
+                                                                                                       "content":  {
+                                                                                                                       "application/json":  {
+                                                                                                                                                "schema":  {
+                                                                                                                                                               "$ref":  "#/components/schemas/Topic"
+                                                                                                                                                           }
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                   },
+                                                                                           "422":  {
+                                                                                                       "description":  "Validation Error",
+                                                                                                       "content":  {
+                                                                                                                       "application/json":  {
+                                                                                                                                                "schema":  {
+                                                                                                                                                               "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                           }
+                                                                                                                                            }
+                                                                                                                   }
+                                                                                                   }
+                                                                                       }
+                                                                     }
+                                                       },
+                  "/api/v1/roadmap/{topic_id}/confirm":  {
+                                                             "post":  {
+                                                                          "tags":  [
+                                                                                       "roadmap"
+                                                                                   ],
+                                                                          "summary":  "Confirm Roadmap",
+                                                                          "operationId":  "confirm_roadmap_api_v1_roadmap__topic_id__confirm_post",
+                                                                          "security":  [
+                                                                                           {
+                                                                                               "OAuth2PasswordBearer":  [
+
+                                                                                                                        ]
+                                                                                           }
+                                                                                       ],
+                                                                          "parameters":  [
+                                                                                             {
+                                                                                                 "name":  "topic_id",
+                                                                                                 "in":  "path",
+                                                                                                 "required":  true,
+                                                                                                 "schema":  {
+                                                                                                                "type":  "integer",
+                                                                                                                "title":  "Topic Id"
+                                                                                                            }
+                                                                                             }
+                                                                                         ],
+                                                                          "requestBody":  {
+                                                                                              "required":  true,
+                                                                                              "content":  {
+                                                                                                              "application/json":  {
+                                                                                                                                       "schema":  {
+                                                                                                                                                      "$ref":  "#/components/schemas/RoadmapConfirmRequest"
+                                                                                                                                                  }
+                                                                                                                                   }
+                                                                                                          }
+                                                                                          },
+                                                                          "responses":  {
+                                                                                            "200":  {
+                                                                                                        "description":  "Successful Response",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  {
+                                                                                                                                                 "schema":  {
+
+                                                                                                                                                            }
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                    },
+                                                                                            "422":  {
+                                                                                                        "description":  "Validation Error",
+                                                                                                        "content":  {
+                                                                                                                        "application/json":  {
+                                                                                                                                                 "schema":  {
+                                                                                                                                                                "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                            }
+                                                                                                                                             }
+                                                                                                                    }
+                                                                                                    }
+                                                                                        }
+                                                                      }
+                                                         },
+                  "/api/v1/roadmap/{topic_id}":  {
+                                                     "get":  {
+                                                                 "tags":  [
+                                                                              "roadmap"
+                                                                          ],
+                                                                 "summary":  "Get Roadmap",
+                                                                 "operationId":  "get_roadmap_api_v1_roadmap__topic_id__get",
+                                                                 "security":  [
+                                                                                  {
+                                                                                      "OAuth2PasswordBearer":  [
+
+                                                                                                               ]
+                                                                                  }
+                                                                              ],
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "topic_id",
+                                                                                        "in":  "path",
+                                                                                        "required":  true,
+                                                                                        "schema":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "title":  "Topic Id"
+                                                                                                   }
+                                                                                    }
+                                                                                ],
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "Successful Response",
+                                                                                               "content":  {
+                                                                                                               "application/json":  {
+                                                                                                                                        "schema":  {
+                                                                                                                                                       "$ref":  "#/components/schemas/Roadmap"
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                                           }
+                                                                                           },
+                                                                                   "422":  {
+                                                                                               "description":  "Validation Error",
+                                                                                               "content":  {
+                                                                                                               "application/json":  {
+                                                                                                                                        "schema":  {
+                                                                                                                                                       "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                                           }
+                                                                                           }
+                                                                               }
+                                                             }
+                                                 },
+                  "/api/v1/roadmap/delete/{topic_id}":  {
+                                                            "delete":  {
+                                                                           "tags":  [
+                                                                                        "roadmap"
+                                                                                    ],
+                                                                           "summary":  "Delete Topic",
+                                                                           "operationId":  "delete_topic_api_v1_roadmap_delete__topic_id__delete",
+                                                                           "security":  [
+                                                                                            {
+                                                                                                "OAuth2PasswordBearer":  [
+
+                                                                                                                         ]
+                                                                                            }
+                                                                                        ],
+                                                                           "parameters":  [
+                                                                                              {
+                                                                                                  "name":  "topic_id",
+                                                                                                  "in":  "path",
+                                                                                                  "required":  true,
+                                                                                                  "schema":  {
+                                                                                                                 "type":  "integer",
+                                                                                                                 "title":  "Topic Id"
+                                                                                                             }
+                                                                                              }
+                                                                                          ],
+                                                                           "responses":  {
+                                                                                             "200":  {
+                                                                                                         "description":  "Successful Response",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  {
+                                                                                                                                                  "schema":  {
+
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                     }
+                                                                                                     },
+                                                                                             "422":  {
+                                                                                                         "description":  "Validation Error",
+                                                                                                         "content":  {
+                                                                                                                         "application/json":  {
+                                                                                                                                                  "schema":  {
+                                                                                                                                                                 "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                             }
+                                                                                                                                              }
+                                                                                                                     }
+                                                                                                     }
+                                                                                         }
+                                                                       }
+                                                        },
+                  "/api/v1/lesson/generate-lesson/{lesson_id}":  {
+                                                                     "post":  {
+                                                                                  "tags":  [
+                                                                                               "lesson"
+                                                                                           ],
+                                                                                  "summary":  "Generate Lesson",
+                                                                                  "operationId":  "generate_lesson_api_v1_lesson_generate_lesson__lesson_id__post",
+                                                                                  "security":  [
+                                                                                                   {
+                                                                                                       "OAuth2PasswordBearer":  [
+
+                                                                                                                                ]
+                                                                                                   }
+                                                                                               ],
+                                                                                  "parameters":  [
+                                                                                                     {
+                                                                                                         "name":  "lesson_id",
+                                                                                                         "in":  "path",
+                                                                                                         "required":  true,
+                                                                                                         "schema":  {
+                                                                                                                        "type":  "integer",
+                                                                                                                        "title":  "Lesson Id"
+                                                                                                                    }
+                                                                                                     }
+                                                                                                 ],
+                                                                                  "responses":  {
+                                                                                                    "200":  {
+                                                                                                                "description":  "Successful Response",
+                                                                                                                "content":  {
+                                                                                                                                "application/json":  {
+                                                                                                                                                         "schema":  {
+                                                                                                                                                                        "$ref":  "#/components/schemas/TaskResponse"
+                                                                                                                                                                    }
+                                                                                                                                                     }
+                                                                                                                            }
+                                                                                                            },
+                                                                                                    "422":  {
+                                                                                                                "description":  "Validation Error",
+                                                                                                                "content":  {
+                                                                                                                                "application/json":  {
+                                                                                                                                                         "schema":  {
+                                                                                                                                                                        "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                                    }
+                                                                                                                                                     }
+                                                                                                                            }
+                                                                                                            }
+                                                                                                }
+                                                                              }
+                                                                 },
+                  "/api/v1/lesson/{lesson_id}":  {
+                                                     "get":  {
+                                                                 "tags":  [
+                                                                              "lesson"
+                                                                          ],
+                                                                 "summary":  "Get Lesson",
+                                                                 "operationId":  "get_lesson_api_v1_lesson__lesson_id__get",
+                                                                 "security":  [
+                                                                                  {
+                                                                                      "OAuth2PasswordBearer":  [
+
+                                                                                                               ]
+                                                                                  }
+                                                                              ],
+                                                                 "parameters":  [
+                                                                                    {
+                                                                                        "name":  "lesson_id",
+                                                                                        "in":  "path",
+                                                                                        "required":  true,
+                                                                                        "schema":  {
+                                                                                                       "type":  "integer",
+                                                                                                       "title":  "Lesson Id"
+                                                                                                   }
+                                                                                    }
+                                                                                ],
+                                                                 "responses":  {
+                                                                                   "200":  {
+                                                                                               "description":  "Successful Response",
+                                                                                               "content":  {
+                                                                                                               "application/json":  {
+                                                                                                                                        "schema":  {
+
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                                           }
+                                                                                           },
+                                                                                   "422":  {
+                                                                                               "description":  "Validation Error",
+                                                                                               "content":  {
+                                                                                                               "application/json":  {
+                                                                                                                                        "schema":  {
+                                                                                                                                                       "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                   }
+                                                                                                                                    }
+                                                                                                           }
+                                                                                           }
+                                                                               }
+                                                             }
+                                                 },
+                  "/api/v1/chat/":  {
+                                        "post":  {
+                                                     "tags":  [
+                                                                  "chat"
+                                                              ],
+                                                     "summary":  "Chat With Tutor",
+                                                     "operationId":  "chat_with_tutor_api_v1_chat__post",
+                                                     "requestBody":  {
+                                                                         "content":  {
+                                                                                         "application/json":  {
+                                                                                                                  "schema":  {
+                                                                                                                                 "$ref":  "#/components/schemas/ChatMessage"
+                                                                                                                             }
+                                                                                                              }
+                                                                                     },
+                                                                         "required":  true
+                                                                     },
+                                                     "responses":  {
+                                                                       "200":  {
+                                                                                   "description":  "Successful Response",
+                                                                                   "content":  {
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/ChatHistory"
+                                                                                                                                       }
+                                                                                                                        }
+                                                                                               }
+                                                                               },
+                                                                       "422":  {
+                                                                                   "description":  "Validation Error",
+                                                                                   "content":  {
+                                                                                                   "application/json":  {
+                                                                                                                            "schema":  {
+                                                                                                                                           "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                       }
+                                                                                                                        }
+                                                                                               }
+                                                                               }
+                                                                   },
+                                                     "security":  [
+                                                                      {
+                                                                          "OAuth2PasswordBearer":  [
+
+                                                                                                   ]
+                                                                      }
+                                                                  ]
+                                                 }
+                                    },
+                  "/api/v1/quiz/generate-quiz/{lesson_id}":  {
+                                                                 "post":  {
+                                                                              "tags":  [
+                                                                                           "quiz"
+                                                                                       ],
+                                                                              "summary":  "Generate Quiz",
+                                                                              "operationId":  "generate_quiz_api_v1_quiz_generate_quiz__lesson_id__post",
+                                                                              "security":  [
+                                                                                               {
+                                                                                                   "OAuth2PasswordBearer":  [
+
+                                                                                                                            ]
+                                                                                               }
+                                                                                           ],
+                                                                              "parameters":  [
+                                                                                                 {
+                                                                                                     "name":  "lesson_id",
+                                                                                                     "in":  "path",
+                                                                                                     "required":  true,
+                                                                                                     "schema":  {
+                                                                                                                    "type":  "integer",
+                                                                                                                    "title":  "Lesson Id"
+                                                                                                                }
+                                                                                                 }
+                                                                                             ],
+                                                                              "responses":  {
+                                                                                                "200":  {
+                                                                                                            "description":  "Successful Response",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  {
+                                                                                                                                                     "schema":  {
+                                                                                                                                                                    "$ref":  "#/components/schemas/TaskResponse"
+                                                                                                                                                                }
+                                                                                                                                                 }
+                                                                                                                        }
+                                                                                                        },
+                                                                                                "422":  {
+                                                                                                            "description":  "Validation Error",
+                                                                                                            "content":  {
+                                                                                                                            "application/json":  {
+                                                                                                                                                     "schema":  {
+                                                                                                                                                                    "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                                }
+                                                                                                                                                 }
+                                                                                                                        }
+                                                                                                        }
+                                                                                            }
+                                                                          }
+                                                             },
+                  "/api/v1/progress/mark-complete":  {
+                                                         "post":  {
+                                                                      "tags":  [
+                                                                                   "progress"
+                                                                               ],
+                                                                      "summary":  "Mark Complete",
+                                                                      "operationId":  "mark_complete_api_v1_progress_mark_complete_post",
+                                                                      "requestBody":  {
+                                                                                          "content":  {
+                                                                                                          "application/json":  {
+                                                                                                                                   "schema":  {
+                                                                                                                                                  "$ref":  "#/components/schemas/ProgressUpdate"
+                                                                                                                                              }
+                                                                                                                               }
+                                                                                                      },
+                                                                                          "required":  true
+                                                                                      },
+                                                                      "responses":  {
+                                                                                        "200":  {
+                                                                                                    "description":  "Successful Response",
+                                                                                                    "content":  {
+                                                                                                                    "application/json":  {
+                                                                                                                                             "schema":  {
+
+                                                                                                                                                        }
+                                                                                                                                         }
+                                                                                                                }
+                                                                                                },
+                                                                                        "422":  {
+                                                                                                    "description":  "Validation Error",
+                                                                                                    "content":  {
+                                                                                                                    "application/json":  {
+                                                                                                                                             "schema":  {
+                                                                                                                                                            "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                        }
+                                                                                                                                         }
+                                                                                                                }
+                                                                                                }
+                                                                                    },
+                                                                      "security":  [
+                                                                                       {
+                                                                                           "OAuth2PasswordBearer":  [
+
+                                                                                                                    ]
+                                                                                       }
+                                                                                   ]
+                                                                  }
+                                                     },
+                  "/api/v1/analytics/":  {
+                                             "get":  {
+                                                         "tags":  [
+                                                                      "analytics"
+                                                                  ],
+                                                         "summary":  "Get Analytics",
+                                                         "operationId":  "get_analytics_api_v1_analytics__get",
+                                                         "responses":  {
+                                                                           "200":  {
+                                                                                       "description":  "Successful Response",
+                                                                                       "content":  {
+                                                                                                       "application/json":  {
+                                                                                                                                "schema":  {
+                                                                                                                                               "$ref":  "#/components/schemas/Analytics"
+                                                                                                                                           }
+                                                                                                                            }
+                                                                                                   }
+                                                                                   }
+                                                                       },
+                                                         "security":  [
+                                                                          {
+                                                                              "OAuth2PasswordBearer":  [
+
+                                                                                                       ]
+                                                                          }
+                                                                      ]
+                                                     }
+                                         },
+                  "/api/v1/tasks/status/{task_id}":  {
+                                                         "get":  {
+                                                                     "tags":  [
+                                                                                  "tasks"
+                                                                              ],
+                                                                     "summary":  "Get Task Status",
+                                                                     "operationId":  "get_task_status_api_v1_tasks_status__task_id__get",
+                                                                     "parameters":  [
+                                                                                        {
+                                                                                            "name":  "task_id",
+                                                                                            "in":  "path",
+                                                                                            "required":  true,
+                                                                                            "schema":  {
+                                                                                                           "type":  "string",
+                                                                                                           "title":  "Task Id"
+                                                                                                       }
+                                                                                        }
+                                                                                    ],
+                                                                     "responses":  {
+                                                                                       "200":  {
+                                                                                                   "description":  "Successful Response",
+                                                                                                   "content":  {
+                                                                                                                   "application/json":  {
+                                                                                                                                            "schema":  {
+                                                                                                                                                           "$ref":  "#/components/schemas/TaskResult"
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                               }
+                                                                                               },
+                                                                                       "422":  {
+                                                                                                   "description":  "Validation Error",
+                                                                                                   "content":  {
+                                                                                                                   "application/json":  {
+                                                                                                                                            "schema":  {
+                                                                                                                                                           "$ref":  "#/components/schemas/HTTPValidationError"
+                                                                                                                                                       }
+                                                                                                                                        }
+                                                                                                               }
+                                                                                               }
+                                                                                   }
+                                                                 }
+                                                     },
+                  "/":  {
+                            "get":  {
+                                        "summary":  "Root",
+                                        "operationId":  "root__get",
+                                        "responses":  {
+                                                          "200":  {
+                                                                      "description":  "Successful Response",
+                                                                      "content":  {
+                                                                                      "application/json":  {
+                                                                                                               "schema":  {
+
+                                                                                                                          }
+                                                                                                           }
+                                                                                  }
+                                                                  }
+                                                      }
+                                    }
+                        }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "Analytics":  {
+                                                         "properties":  {
+                                                                            "lessons_completed":  {
+                                                                                                      "type":  "integer",
+                                                                                                      "title":  "Lessons Completed"
+                                                                                                  },
+                                                                            "quiz_scores":  {
+                                                                                                "items":  {
+                                                                                                              "type":  "number"
+                                                                                                          },
+                                                                                                "type":  "array",
+                                                                                                "title":  "Quiz Scores"
+                                                                                            },
+                                                                            "study_streak":  {
+                                                                                                 "type":  "integer",
+                                                                                                 "title":  "Study Streak"
+                                                                                             },
+                                                                            "progress_percentage":  {
+                                                                                                        "type":  "number",
+                                                                                                        "title":  "Progress Percentage"
+                                                                                                    }
+                                                                        },
+                                                         "type":  "object",
+                                                         "required":  [
+                                                                          "lessons_completed",
+                                                                          "quiz_scores",
+                                                                          "study_streak",
+                                                                          "progress_percentage"
+                                                                      ],
+                                                         "title":  "Analytics"
+                                                     },
+                                       "Body_login_api_v1_auth_login_post":  {
+                                                                                 "properties":  {
+                                                                                                    "grant_type":  {
+                                                                                                                       "anyOf":  [
+                                                                                                                                     {
+                                                                                                                                         "type":  "string",
+                                                                                                                                         "pattern":  "^password$"
+                                                                                                                                     },
+                                                                                                                                     {
+                                                                                                                                         "type":  "null"
+                                                                                                                                     }
+                                                                                                                                 ],
+                                                                                                                       "title":  "Grant Type"
+                                                                                                                   },
+                                                                                                    "username":  {
+                                                                                                                     "type":  "string",
+                                                                                                                     "title":  "Username"
+                                                                                                                 },
+                                                                                                    "password":  {
+                                                                                                                     "type":  "string",
+                                                                                                                     "format":  "password",
+                                                                                                                     "title":  "Password"
+                                                                                                                 },
+                                                                                                    "scope":  {
+                                                                                                                  "type":  "string",
+                                                                                                                  "title":  "Scope",
+                                                                                                                  "default":  ""
+                                                                                                              },
+                                                                                                    "client_id":  {
+                                                                                                                      "anyOf":  [
+                                                                                                                                    {
+                                                                                                                                        "type":  "string"
+                                                                                                                                    },
+                                                                                                                                    {
+                                                                                                                                        "type":  "null"
+                                                                                                                                    }
+                                                                                                                                ],
+                                                                                                                      "title":  "Client Id"
+                                                                                                                  },
+                                                                                                    "client_secret":  {
+                                                                                                                          "anyOf":  [
+                                                                                                                                        {
+                                                                                                                                            "type":  "string"
+                                                                                                                                        },
+                                                                                                                                        {
+                                                                                                                                            "type":  "null"
+                                                                                                                                        }
+                                                                                                                                    ],
+                                                                                                                          "format":  "password",
+                                                                                                                          "title":  "Client Secret"
+                                                                                                                      }
+                                                                                                },
+                                                                                 "type":  "object",
+                                                                                 "required":  [
+                                                                                                  "username",
+                                                                                                  "password"
+                                                                                              ],
+                                                                                 "title":  "Body_login_api_v1_auth_login_post"
+                                                                             },
+                                       "ChatHistory":  {
+                                                           "properties":  {
+                                                                              "id":  {
+                                                                                         "type":  "integer",
+                                                                                         "title":  "Id"
+                                                                                     },
+                                                                              "user_id":  {
+                                                                                              "type":  "integer",
+                                                                                              "title":  "User Id"
+                                                                                          },
+                                                                              "topic_id":  {
+                                                                                               "type":  "integer",
+                                                                                               "title":  "Topic Id"
+                                                                                           },
+                                                                              "message":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Message"
+                                                                                          },
+                                                                              "response":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Response"
+                                                                                           },
+                                                                              "timestamp":  {
+                                                                                                "type":  "string",
+                                                                                                "format":  "date-time",
+                                                                                                "title":  "Timestamp"
+                                                                                            }
+                                                                          },
+                                                           "type":  "object",
+                                                           "required":  [
+                                                                            "id",
+                                                                            "user_id",
+                                                                            "topic_id",
+                                                                            "message",
+                                                                            "response",
+                                                                            "timestamp"
+                                                                        ],
+                                                           "title":  "ChatHistory"
+                                                       },
+                                       "ChatMessage":  {
+                                                           "properties":  {
+                                                                              "user_message":  {
+                                                                                                   "type":  "string",
+                                                                                                   "title":  "User Message"
+                                                                                               },
+                                                                              "topic_id":  {
+                                                                                               "type":  "integer",
+                                                                                               "title":  "Topic Id"
+                                                                                           },
+                                                                              "lesson_id":  {
+                                                                                                "anyOf":  [
+                                                                                                              {
+                                                                                                                  "type":  "integer"
+                                                                                                              },
+                                                                                                              {
+                                                                                                                  "type":  "null"
+                                                                                                              }
+                                                                                                          ],
+                                                                                                "title":  "Lesson Id"
+                                                                                            },
+                                                                              "history":  {
+                                                                                              "anyOf":  [
+                                                                                                            {
+                                                                                                                "items":  {
+                                                                                                                              "$ref":  "#/components/schemas/ChatTurn"
+                                                                                                                          },
+                                                                                                                "type":  "array"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "type":  "null"
+                                                                                                            }
+                                                                                                        ],
+                                                                                              "title":  "History",
+                                                                                              "default":  [
+
+                                                                                                          ]
+                                                                                          }
+                                                                          },
+                                                           "type":  "object",
+                                                           "required":  [
+                                                                            "user_message",
+                                                                            "topic_id"
+                                                                        ],
+                                                           "title":  "ChatMessage"
+                                                       },
+                                       "ChatTurn":  {
+                                                        "properties":  {
+                                                                           "role":  {
+                                                                                        "type":  "string",
+                                                                                        "title":  "Role"
+                                                                                    },
+                                                                           "content":  {
+                                                                                           "type":  "string",
+                                                                                           "title":  "Content"
+                                                                                       },
+                                                                           "reasoning_details":  {
+                                                                                                     "anyOf":  [
+                                                                                                                   {
+                                                                                                                       "type":  "string"
+                                                                                                                   },
+                                                                                                                   {
+                                                                                                                       "type":  "null"
+                                                                                                                   }
+                                                                                                               ],
+                                                                                                     "title":  "Reasoning Details"
+                                                                                                 }
+                                                                       },
+                                                        "type":  "object",
+                                                        "required":  [
+                                                                         "role",
+                                                                         "content"
+                                                                     ],
+                                                        "title":  "ChatTurn"
+                                                    },
+                                       "HTTPValidationError":  {
+                                                                   "properties":  {
+                                                                                      "detail":  {
+                                                                                                     "items":  {
+                                                                                                                   "$ref":  "#/components/schemas/ValidationError"
+                                                                                                               },
+                                                                                                     "type":  "array",
+                                                                                                     "title":  "Detail"
+                                                                                                 }
+                                                                                  },
+                                                                   "type":  "object",
+                                                                   "title":  "HTTPValidationError"
+                                                               },
+                                       "ProgressUpdate":  {
+                                                              "properties":  {
+                                                                                 "lesson_id":  {
+                                                                                                   "type":  "integer",
+                                                                                                   "title":  "Lesson Id"
+                                                                                               },
+                                                                                 "completed":  {
+                                                                                                   "type":  "boolean",
+                                                                                                   "title":  "Completed"
+                                                                                               }
+                                                                             },
+                                                              "type":  "object",
+                                                              "required":  [
+                                                                               "lesson_id",
+                                                                               "completed"
+                                                                           ],
+                                                              "title":  "ProgressUpdate"
+                                                          },
+                                       "Roadmap":  {
+                                                       "properties":  {
+                                                                          "topic":  {
+                                                                                        "type":  "string",
+                                                                                        "title":  "Topic"
+                                                                                    },
+                                                                          "units":  {
+                                                                                        "items":  {
+                                                                                                      "$ref":  "#/components/schemas/RoadmapUnit"
+                                                                                                  },
+                                                                                        "type":  "array",
+                                                                                        "title":  "Units"
+                                                                                    }
+                                                                      },
+                                                       "type":  "object",
+                                                       "required":  [
+                                                                        "topic",
+                                                                        "units"
+                                                                    ],
+                                                       "title":  "Roadmap"
+                                                   },
+                                       "RoadmapConfirmRequest":  {
+                                                                     "properties":  {
+                                                                                        "roadmap_graph":  {
+                                                                                                              "additionalProperties":  true,
+                                                                                                              "type":  "object",
+                                                                                                              "title":  "Roadmap Graph"
+                                                                                                          }
+                                                                                    },
+                                                                     "type":  "object",
+                                                                     "required":  [
+                                                                                      "roadmap_graph"
+                                                                                  ],
+                                                                     "title":  "RoadmapConfirmRequest"
+                                                                 },
+                                       "RoadmapUnit":  {
+                                                           "properties":  {
+                                                                              "title":  {
+                                                                                            "type":  "string",
+                                                                                            "title":  "Title"
+                                                                                        },
+                                                                              "lessons":  {
+                                                                                              "items":  {
+                                                                                                            "type":  "string"
+                                                                                                        },
+                                                                                              "type":  "array",
+                                                                                              "title":  "Lessons"
+                                                                                          }
+                                                                          },
+                                                           "type":  "object",
+                                                           "required":  [
+                                                                            "title",
+                                                                            "lessons"
+                                                                        ],
+                                                           "title":  "RoadmapUnit"
+                                                       },
+                                       "TaskResponse":  {
+                                                            "properties":  {
+                                                                               "task_id":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Task Id"
+                                                                                           },
+                                                                               "status":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Status"
+                                                                                          }
+                                                                           },
+                                                            "type":  "object",
+                                                            "required":  [
+                                                                             "task_id",
+                                                                             "status"
+                                                                         ],
+                                                            "title":  "TaskResponse"
+                                                        },
+                                       "TaskResult":  {
+                                                          "properties":  {
+                                                                             "task_id":  {
+                                                                                             "type":  "string",
+                                                                                             "title":  "Task Id"
+                                                                                         },
+                                                                             "status":  {
+                                                                                            "type":  "string",
+                                                                                            "title":  "Status"
+                                                                                        },
+                                                                             "result":  {
+                                                                                            "anyOf":  [
+                                                                                                          {
+
+                                                                                                          },
+                                                                                                          {
+                                                                                                              "type":  "null"
+                                                                                                          }
+                                                                                                      ],
+                                                                                            "title":  "Result"
+                                                                                        }
+                                                                         },
+                                                          "type":  "object",
+                                                          "required":  [
+                                                                           "task_id",
+                                                                           "status"
+                                                                       ],
+                                                          "title":  "TaskResult"
+                                                      },
+                                       "Token":  {
+                                                     "properties":  {
+                                                                        "access_token":  {
+                                                                                             "type":  "string",
+                                                                                             "title":  "Access Token"
+                                                                                         },
+                                                                        "token_type":  {
+                                                                                           "type":  "string",
+                                                                                           "title":  "Token Type"
+                                                                                       }
+                                                                    },
+                                                     "type":  "object",
+                                                     "required":  [
+                                                                      "access_token",
+                                                                      "token_type"
+                                                                  ],
+                                                     "title":  "Token"
+                                                 },
+                                       "Topic":  {
+                                                     "properties":  {
+                                                                        "title":  {
+                                                                                      "anyOf":  [
+                                                                                                    {
+                                                                                                        "type":  "string"
+                                                                                                    },
+                                                                                                    {
+                                                                                                        "type":  "null"
+                                                                                                    }
+                                                                                                ],
+                                                                                      "title":  "Title"
+                                                                                  },
+                                                                        "roadmap_graph":  {
+                                                                                              "anyOf":  [
+                                                                                                            {
+                                                                                                                "additionalProperties":  true,
+                                                                                                                "type":  "object"
+                                                                                                            },
+                                                                                                            {
+                                                                                                                "type":  "null"
+                                                                                                            }
+                                                                                                        ],
+                                                                                              "title":  "Roadmap Graph"
+                                                                                          }
+                                                                    },
+                                                     "type":  "object",
+                                                     "title":  "Topic"
+                                                 },
+                                       "TopicCreate":  {
+                                                           "properties":  {
+                                                                              "title":  {
+                                                                                            "anyOf":  [
+                                                                                                          {
+                                                                                                              "type":  "string"
+                                                                                                          },
+                                                                                                          {
+                                                                                                              "type":  "null"
+                                                                                                          }
+                                                                                                      ],
+                                                                                            "title":  "Title"
+                                                                                        },
+                                                                              "roadmap_graph":  {
+                                                                                                    "anyOf":  [
+                                                                                                                  {
+                                                                                                                      "additionalProperties":  true,
+                                                                                                                      "type":  "object"
+                                                                                                                  },
+                                                                                                                  {
+                                                                                                                      "type":  "null"
+                                                                                                                  }
+                                                                                                              ],
+                                                                                                    "title":  "Roadmap Graph"
+                                                                                                },
+                                                                              "topic":  {
+                                                                                            "type":  "string",
+                                                                                            "title":  "Topic"
+                                                                                        }
+                                                                          },
+                                                           "type":  "object",
+                                                           "required":  [
+                                                                            "topic"
+                                                                        ],
+                                                           "title":  "TopicCreate"
+                                                       },
+                                       "TopicUpdate":  {
+                                                           "properties":  {
+                                                                              "roadmap_graph":  {
+                                                                                                    "additionalProperties":  true,
+                                                                                                    "type":  "object",
+                                                                                                    "title":  "Roadmap Graph"
+                                                                                                }
+                                                                          },
+                                                           "type":  "object",
+                                                           "required":  [
+                                                                            "roadmap_graph"
+                                                                        ],
+                                                           "title":  "TopicUpdate"
+                                                       },
+                                       "User":  {
+                                                    "properties":  {
+                                                                       "username":  {
+                                                                                        "type":  "string",
+                                                                                        "title":  "Username"
+                                                                                    },
+                                                                       "email":  {
+                                                                                     "type":  "string",
+                                                                                     "format":  "email",
+                                                                                     "title":  "Email"
+                                                                                 },
+                                                                       "id":  {
+                                                                                  "type":  "integer",
+                                                                                  "title":  "Id"
+                                                                              },
+                                                                       "created_at":  {
+                                                                                          "type":  "string",
+                                                                                          "format":  "date-time",
+                                                                                          "title":  "Created At"
+                                                                                      }
+                                                                   },
+                                                    "type":  "object",
+                                                    "required":  [
+                                                                     "username",
+                                                                     "email",
+                                                                     "id",
+                                                                     "created_at"
+                                                                 ],
+                                                    "title":  "User"
+                                                },
+                                       "UserCreate":  {
+                                                          "properties":  {
+                                                                             "username":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Username"
+                                                                                          },
+                                                                             "email":  {
+                                                                                           "type":  "string",
+                                                                                           "format":  "email",
+                                                                                           "title":  "Email"
+                                                                                       },
+                                                                             "password":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Password"
+                                                                                          }
+                                                                         },
+                                                          "type":  "object",
+                                                          "required":  [
+                                                                           "username",
+                                                                           "email",
+                                                                           "password"
+                                                                       ],
+                                                          "title":  "UserCreate"
+                                                      },
+                                       "ValidationError":  {
+                                                               "properties":  {
+                                                                                  "loc":  {
+                                                                                              "items":  {
+                                                                                                            "anyOf":  [
+                                                                                                                          {
+                                                                                                                              "type":  "string"
+                                                                                                                          },
+                                                                                                                          {
+                                                                                                                              "type":  "integer"
+                                                                                                                          }
+                                                                                                                      ]
+                                                                                                        },
+                                                                                              "type":  "array",
+                                                                                              "title":  "Location"
+                                                                                          },
+                                                                                  "msg":  {
+                                                                                              "type":  "string",
+                                                                                              "title":  "Message"
+                                                                                          },
+                                                                                  "type":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Error Type"
+                                                                                           },
+                                                                                  "input":  {
+                                                                                                "title":  "Input"
+                                                                                            },
+                                                                                  "ctx":  {
+                                                                                              "type":  "object",
+                                                                                              "title":  "Context"
+                                                                                          }
+                                                                              },
+                                                               "type":  "object",
+                                                               "required":  [
+                                                                                "loc",
+                                                                                "msg",
+                                                                                "type"
+                                                                            ],
+                                                               "title":  "ValidationError"
+                                                           }
+                                   },
+                       "securitySchemes":  {
+                                               "OAuth2PasswordBearer":  {
+                                                                            "type":  "oauth2",
+                                                                            "flows":  {
+                                                                                          "password":  {
+                                                                                                           "scopes":  {
+
+                                                                                                                      },
+                                                                                                           "tokenUrl":  "api/v1/auth/token"
+                                                                                                       }
+                                                                                      }
+                                                                        }
+                                           }
+                   }
+}

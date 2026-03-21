@@ -75,13 +75,14 @@ async def confirm_roadmap(
     nodes = confirm_in.roadmap_graph.get("nodes", [])
     lessons_triggered = 0
     
+    updated_nodes = []
     for node in nodes:
         node_id = node.get("id", "")
         if node_id.startswith("lesson_") or node_id.startswith("custom_"):
             lesson_title = node.get("data", {}).get("label", "Untitled Lesson")
             
             # Check if lesson already exists
-            res = await db.execute(select(Lesson).where(Lesson.topic_id == topic_id, Lesson.title == lesson_title))
+            res = await db.execute(select(Lesson).where(Lesson.topic_id == topic_id, (Lesson.title == lesson_title) | (Lesson.id == node.get("data", {}).get("lessonId"))))
             lesson = res.scalars().first()
             
             if not lesson:
@@ -89,15 +90,23 @@ async def confirm_roadmap(
                 db.add(lesson)
                 await db.flush()
             
+            # Backfill lessonId into node data
+            if "data" not in node:
+                node["data"] = {}
+            node["data"]["lessonId"] = lesson.id
+            
             # Trigger generation task if content is empty
             if not lesson.content:
-                # Use a chain or just fire both (order matters for quiz though)
-                # For simplicity, we fire generate_lesson first
                 generate_lesson_task.delay(lesson.id)
-                # generate_quiz_task needs lesson content, so we should ideally chain them 
-                # or have generate_lesson trigger generate_quiz upon completion.
                 lessons_triggered += 1
+        
+        updated_nodes.append(node)
                 
+    # Save the updated graph with lessonIds
+    topic.roadmap_graph = {
+        "nodes": updated_nodes,
+        "edges": confirm_in.roadmap_graph.get("edges", [])
+    }
     await db.commit()
     return {"message": f"Roadmap confirmed! Architecting {lessons_triggered} lessons and related content..."}
 
@@ -130,3 +139,17 @@ async def get_roadmap(
         "units": units,
         "roadmap_graph": topic.roadmap_graph
     }
+
+@router.delete("/delete/{topic_id}")
+async def delete_topic(
+    topic_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    topic = await db.get(Topic, topic_id)
+    if not topic or topic.user_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Topic not found")
+    
+    await db.delete(topic)
+    await db.commit()
+    return {"message": "Topic deleted successfully"}

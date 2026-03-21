@@ -13,5 +13,5 @@ class Topic(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     owner = relationship("User", back_populates="topics")
-    lessons = relationship("Lesson", back_populates="topic")
-    chat_history = relationship("ChatHistory", back_populates="topic")
+    lessons = relationship("Lesson", back_populates="topic", cascade="all, delete-orphan")
+    chat_history = relationship("ChatHistory", back_populates="topic", cascade="all, delete-orphan")

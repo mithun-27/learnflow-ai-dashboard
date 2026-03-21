@@ -42,7 +42,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <SidebarGroupContent>
                 <SidebarMenu>
                   {navItems.map((item) => {
-                    const active = location.pathname === item.url;
+                    const active = item.url === "/roadmap" 
+                      ? location.pathname.startsWith("/roadmap")
+                      : location.pathname === item.url;
                     return (
                       <SidebarMenuItem key={item.title}>
                         <SidebarMenuButton asChild>

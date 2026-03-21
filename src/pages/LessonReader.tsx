@@ -8,6 +8,7 @@ import DashboardLayout from "@/components/DashboardLayout";
 import ReactMarkdown from "react-markdown";
 import { api, Lesson } from "@/lib/api";
 import { toast } from "sonner";
+import remarkGfm from "remark-gfm";
 
 const LessonReader = () => {
   const { lessonId } = useParams();
@@ -17,22 +18,95 @@ const LessonReader = () => {
   const [completed, setCompleted] = useState(false);
   const [marking, setMarking] = useState(false);
 
+  // Helper to repair common AI markdown errors
+  const repairMarkdown = (content: string) => {
+    if (!content) return "";
+    
+    const lines = content.split('\n');
+    let inTable = false;
+    let headerPipeCount = 0;
+
+    const repairedLines = lines.map((line) => {
+      let trimmed = line.trim();
+      const isTableLine = (trimmed.match(/\|/g) || []).length >= 2;
+
+      if (isTableLine) {
+        // Clean cell content of disruptive markdown markers
+        // Strip list markers: "1. Header" -> "Header"
+        // Strip markdown headers: "## Header" -> "Header"
+        // Strip bold/italic markers from headers if they are redundant
+        let processed = trimmed
+            .replace(/^\d+\.\s+/, "")
+            .replace(/^#+\s*/, "")
+            .replace(/\*\*/g, ""); // Clean bold markers that sometimes break cell parsing
+
+        if (!processed.startsWith("|")) processed = "| " + processed;
+        if (!processed.endsWith("|")) processed = processed + " |";
+
+        const currentPipes = (processed.match(/\|/g) || []).length;
+
+        if (!inTable) {
+          inTable = true;
+          headerPipeCount = currentPipes;
+          return "\n" + processed;
+        }
+
+        // Fix separator line balancing: "|---|---|" -> match header pipes
+        if (processed.includes("---")) {
+          return "|" + "---|".repeat(headerPipeCount - 1);
+        }
+
+        // Balance data rows to match header
+        const diff = headerPipeCount - currentPipes;
+        if (diff > 0) {
+            processed = processed.substring(0, processed.length - 1) + " |".repeat(diff);
+        }
+
+        return processed;
+      } else {
+        if (inTable) {
+          inTable = false;
+          return "\n" + line;
+        }
+        return line;
+      }
+    });
+
+    return repairedLines.join("\n")
+      .replace(/\|\|/g, "|")
+      .replace(/\n{3,}/g, "\n\n");
+  };
+
   useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
     const fetchLesson = async () => {
       if (!lessonId) return;
-      setLoading(true);
       try {
         const data = await api.getLesson(parseInt(lessonId));
         setLesson(data);
-        // Check if already completed (this needs a separate check or part of getLesson)
-        // For now we assume false until marked
+        setLoading(false);
+
+        // If content is still missing, poll every 5 seconds
+        if (!data.content) {
+          intervalId = setInterval(async () => {
+            const pollData = await api.getLesson(parseInt(lessonId));
+            if (pollData.content) {
+              setLesson(pollData);
+              clearInterval(intervalId);
+            }
+          }, 5000);
+        }
       } catch (err) {
         toast.error("Failed to load lesson content");
-      } finally {
         setLoading(false);
       }
     };
+
     fetchLesson();
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [lessonId]);
 
   const handleToggleComplete = async () => {
@@ -50,7 +124,7 @@ const LessonReader = () => {
     }
   };
 
-  if (loading) {
+  if (loading || (lesson && !lesson.content)) {
     return (
       <DashboardLayout>
         <div className="h-screen w-full flex flex-col items-center justify-center space-y-4">
@@ -142,7 +216,57 @@ const LessonReader = () => {
                     prose-img:rounded-2xl prose-img:shadow-2xl
                     prose-hr:border-border/50
                 ">
-                    <ReactMarkdown>{lesson.content}</ReactMarkdown>
+                    <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            table: ({ children }) => (
+                                <div className="my-10 w-full overflow-x-auto rounded-3xl border border-border/40 bg-card/40 backdrop-blur-xl shadow-2xl">
+                                    <table className="w-full border-collapse text-sm min-w-[600px]">
+                                        {children}
+                                    </table>
+                                </div>
+                            ),
+                            thead: ({ children }) => (
+                                <thead className="bg-primary/10 border-b border-border/50 uppercase text-[11px] tracking-wider">
+                                    {children}
+                                </thead>
+                            ),
+                            th: ({ children }) => (
+                                <th className="px-8 py-5 text-left font-extrabold text-foreground border-r border-border/20 last:border-r-0">
+                                    {children}
+                                </th>
+                            ),
+                            td: ({ children }) => (
+                                <td className="px-8 py-5 border-b border-border/20 text-muted-foreground leading-relaxed font-medium align-top border-r border-border/10 last:border-r-0 last:border-b-0">
+                                    {children}
+                                </td>
+                            ),
+                            a: ({ href, children }) => (
+                                <a 
+                                    href={href} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-primary hover:text-primary underline decoration-primary/30 underline-offset-4 font-bold transition-all hover:decoration-primary"
+                                >
+                                    {children}
+                                </a>
+                            ),
+                            code: ({ className, children }) => {
+                                const hasLang = /language-(\w+)/.exec(className || "");
+                                return !hasLang ? (
+                                    <code className="bg-primary/5 border border-primary/10 px-2 py-1 rounded-lg text-primary font-mono text-[0.85em] font-semibold">
+                                        {children}
+                                    </code>
+                                ) : (
+                                    <pre className="p-8 rounded-3xl bg-[#0d1117] border border-border/50 overflow-x-auto my-10 shadow-3xl">
+                                        <code className={className}>{children}</code>
+                                    </pre>
+                                );
+                            }
+                        }}
+                    >
+                        {repairMarkdown(lesson.content)}
+                    </ReactMarkdown>
                 </div>
             </motion.div>
           </div>

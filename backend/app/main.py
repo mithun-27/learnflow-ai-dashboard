@@ -27,12 +27,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-@app.middleware("http")
-async def log_requests(request: Request, call_next):
-    print(f"DEBUG_REQ: {request.method} {request.url}")
-    response = await call_next(request)
-    return response
-
 # CORS Middleware
 origins = [
     "http://localhost:8081",
@@ -47,7 +41,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allow_headers=["*"],
 )
 

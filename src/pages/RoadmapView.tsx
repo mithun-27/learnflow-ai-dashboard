@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ReactFlow,
   Background,
@@ -69,7 +70,8 @@ const RoadmapView = () => {
     try {
       const res = await api.confirmRoadmap(parseInt(topicId), nodes, edges);
       toast.success(res.message);
-      // Optionally redirect to dashboard or show completion state
+      // Re-fetch to get updated IDs in nodes
+      await fetchRoadmap();
     } catch (err) {
       toast.error("Failed to confirm roadmap");
     } finally {
@@ -113,7 +115,8 @@ const RoadmapView = () => {
           <div className="flex gap-2 mt-1">
             <Button size="sm" className="flex-1 gradient-bg text-xs h-8 text-white font-bold" onClick={() => {
                  toast.dismiss(t);
-                 navigate(`/lesson/${node.id.split('_')[1] || 0}`);
+                 const lessonId = node.data.lessonId || node.id.split('_')[1] || 0;
+                 navigate(`/lesson/${lessonId}`);
             }}>
               <ArrowRight className="h-3 w-3 mr-1" /> Start
             </Button>
@@ -191,6 +194,53 @@ const RoadmapView = () => {
             />
           </ReactFlow>
         </div>
+
+        {/* Loading Overlay */}
+        <AnimatePresence>
+          {confirming && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-background"
+            >
+              <div className="relative mb-8">
+                <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full scale-150 animate-pulse" />
+                <div className="relative glass-card p-16 rounded-full border border-primary/20 bg-primary/5 flex items-center justify-center shadow-2xl shadow-primary/20">
+                  <div className="absolute inset-0 rounded-full border border-primary/20 animate-[spin_3s_linear_infinite]" />
+                  <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                </div>
+              </div>
+              <div className="text-center space-y-4 relative z-10 px-6">
+                <h2 className="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-400 to-primary animate-gradient-x tracking-tight">
+                  Architecting Your Learning Path
+                </h2>
+                <p className="text-muted-foreground text-base max-w-lg mx-auto italic font-medium leading-relaxed">
+                  We are custom-engineering 25 high-quality lessons and quizzes for you. This may take a few minutes as we craft your personalized curriculum.
+                </p>
+                <div className="mt-12 flex justify-center gap-3">
+                  {[0, 1, 2, 3].map((i) => (
+                    <motion.div
+                      key={i}
+                      animate={{ 
+                        scale: [1, 1.8, 1], 
+                        opacity: [0.3, 1, 0.3],
+                        y: [0, -10, 0] 
+                      }}
+                      transition={{ 
+                        duration: 1.5, 
+                        repeat: Infinity, 
+                        delay: i * 0.2,
+                        ease: "easeInOut" 
+                      }}
+                      className="w-3 h-3 rounded-full bg-primary shadow-lg shadow-primary/50"
+                    />
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </DashboardLayout>
   );
