@@ -20,9 +20,14 @@ class Topic(TopicBase):
     class Config:
         from_attributes = True
 
+class LessonMetadata(BaseModel):
+    id: int
+    title: str
+    is_completed: bool = False
+
 class RoadmapUnit(BaseModel):
     title: str
-    lessons: List[str]
+    lessons: List[LessonMetadata]
 
 class Roadmap(BaseModel):
     topic: str

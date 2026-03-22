@@ -18,64 +18,6 @@ const LessonReader = () => {
   const [completed, setCompleted] = useState(false);
   const [marking, setMarking] = useState(false);
 
-  // Helper to repair common AI markdown errors
-  const repairMarkdown = (content: string) => {
-    if (!content) return "";
-    
-    const lines = content.split('\n');
-    let inTable = false;
-    let headerPipeCount = 0;
-
-    const repairedLines = lines.map((line) => {
-      let trimmed = line.trim();
-      const isTableLine = (trimmed.match(/\|/g) || []).length >= 2;
-
-      if (isTableLine) {
-        // Clean cell content of disruptive markdown markers
-        // Strip list markers: "1. Header" -> "Header"
-        // Strip markdown headers: "## Header" -> "Header"
-        // Strip bold/italic markers from headers if they are redundant
-        let processed = trimmed
-            .replace(/^\d+\.\s+/, "")
-            .replace(/^#+\s*/, "")
-            .replace(/\*\*/g, ""); // Clean bold markers that sometimes break cell parsing
-
-        if (!processed.startsWith("|")) processed = "| " + processed;
-        if (!processed.endsWith("|")) processed = processed + " |";
-
-        const currentPipes = (processed.match(/\|/g) || []).length;
-
-        if (!inTable) {
-          inTable = true;
-          headerPipeCount = currentPipes;
-          return "\n" + processed;
-        }
-
-        // Fix separator line balancing: "|---|---|" -> match header pipes
-        if (processed.includes("---")) {
-          return "|" + "---|".repeat(headerPipeCount - 1);
-        }
-
-        // Balance data rows to match header
-        const diff = headerPipeCount - currentPipes;
-        if (diff > 0) {
-            processed = processed.substring(0, processed.length - 1) + " |".repeat(diff);
-        }
-
-        return processed;
-      } else {
-        if (inTable) {
-          inTable = false;
-          return "\n" + line;
-        }
-        return line;
-      }
-    });
-
-    return repairedLines.join("\n")
-      .replace(/\|\|/g, "|")
-      .replace(/\n{3,}/g, "\n\n");
-  };
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -265,7 +207,7 @@ const LessonReader = () => {
                             }
                         }}
                     >
-                        {repairMarkdown(lesson.content)}
+                        {lesson.content}
                     </ReactMarkdown>
                 </div>
             </motion.div>

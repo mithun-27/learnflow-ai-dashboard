@@ -120,18 +120,29 @@ async def get_roadmap(
     if not topic or topic.user_id != current_user.id:
         raise HTTPException(status_code=404, detail="Topic not found")
     
-    result = await db.execute(select(Lesson).where(Lesson.topic_id == topic_id).order_by(Lesson.order_index))
-    lessons = result.scalars().all()
+    from app.models.progress import Progress
+    result = await db.execute(
+        select(Lesson, Progress.completed)
+        .outerjoin(Progress, (Progress.lesson_id == Lesson.id) & (Progress.user_id == current_user.id))
+        .where(Lesson.topic_id == topic_id)
+        .order_by(Lesson.order_index)
+    )
+    rows = result.all()
     
     # Structure lessons into units for the frontend
     units_dict = {}
-    for lesson in lessons:
+    for lesson, is_completed in rows:
         unit_title = lesson.title.split(": ")[0] if ": " in lesson.title else "Core Units"
         lesson_name = lesson.title.split(": ")[1] if ": " in lesson.title else lesson.title
         
         if unit_title not in units_dict:
             units_dict[unit_title] = []
-        units_dict[unit_title].append(lesson_name)
+            
+        units_dict[unit_title].append({
+            "id": lesson.id,
+            "title": lesson_name,
+            "is_completed": bool(is_completed)
+        })
     
     units = [{"title": k, "lessons": v} for k, v in units_dict.items()]
     return {

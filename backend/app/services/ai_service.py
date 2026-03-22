@@ -44,14 +44,95 @@ class AIService:
         return Roadmap.model_validate_json(content)
 
     @staticmethod
+    def normalize_markdown(content: str) -> str:
+        """
+        Python implementation of the 'Super Repair' logic.
+        Ensures tables are balanced, headers are clean, and spacing is correct.
+        """
+        if not content:
+            return ""
+        
+        import re
+        lines = content.split('\n')
+        repaired_lines = []
+        in_table = False
+        header_pipe_count = 0
+
+        for line in lines:
+            trimmed = line.strip()
+            # Detect table line: at least 2 pipes
+            is_table_line = len(re.findall(r'\|', trimmed)) >= 2
+
+            if is_table_line:
+                # 1. Clean cell content of disruptive markdown markers
+                # Strip list markers: "1. Header" -> "Header"
+                # Strip markdown headers: "## Header" -> "Header"
+                # Strip bold/italic markers from headers if they are redundant
+                processed = re.sub(r'^\d+\.\s+', '', trimmed)
+                processed = re.sub(r'^#+\s*', '', processed)
+                processed = processed.replace('**', '')
+
+                if not processed.startswith('|'):
+                    processed = f"| {processed}"
+                if not processed.endswith('|'):
+                    processed = f"{processed} |"
+
+                current_pipes = len(re.findall(r'\|', processed))
+
+                if not in_table:
+                    in_table = True
+                    header_pipe_count = current_pipes
+                    repaired_lines.append("\n" + processed)
+                    continue
+
+                # 2. Fix separator line balancing: "|---|---|" -> match header pipes
+                if '---' in processed:
+                    repaired_lines.append("|" + "---| " * (header_pipe_count - 1))
+                    continue
+
+                # 3. Balance data rows to match header
+                diff = header_pipe_count - current_pipes
+                if diff > 0:
+                    processed = processed[:len(processed)-1] + " | " * diff + "|"
+                
+                repaired_lines.append(processed)
+            else:
+                if in_table:
+                    in_table = False
+                    repaired_lines.append("\n" + line)
+                else:
+                    repaired_lines.append(line)
+
+        final_content = "\n".join(repaired_lines)
+        # Final cleanup: double pipes | | and excess newlines
+        final_content = final_content.replace('||', '|')
+        final_content = re.sub(r'\n{3,}', '\n\n', final_content)
+        
+        return final_content
+
+    @staticmethod
     async def generate_lesson_content(topic: str, lesson_title: str) -> str:
-        prompt = f"Write a detailed educational lesson about '{lesson_title}' in the context of '{topic}'. Use Markdown."
+        prompt = f"""
+        Write a detailed educational lesson about '{lesson_title}' in the context of '{topic}'.
+        
+        STRICT FORMATTING RULES:
+        1. Use Markdown for headings, lists, and tables.
+        2. TABLES: 
+           - Every table must have a header row and a separator row (|---|---|).
+           - Do NOT use list markers (e.g., "1. ") or markdown headers (e.g., "#") INSIDE table headers.
+           - Ensure every row has the SAME number of columns/pipes.
+        3. HEADINGS: Use # for main titles and ## or ### for sub-sections.
+        4. SPACING: Ensure a blank line before and after tables and code blocks.
+        """
         payload = {
             "model": settings.AI_MODEL,
             "messages": [{"role": "user", "content": prompt}]
         }
         data = await AIService._post_request(payload)
-        return data['choices'][0]['message']['content']
+        raw_content = data['choices'][0]['message']['content']
+        
+        # Apply normalization before returning
+        return AIService.normalize_markdown(raw_content)
 
     @staticmethod
     async def generate_quiz(lesson_title: str, lesson_content: str) -> List[QuizQuestionBase]:

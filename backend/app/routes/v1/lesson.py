@@ -38,4 +38,8 @@ async def get_lesson(
     if not topic or topic.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to view this lesson")
         
+    from app.services.ai_service import ai_service
+    if lesson.content:
+        lesson.content = ai_service.normalize_markdown(lesson.content)
+        
     return lesson

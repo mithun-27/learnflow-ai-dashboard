@@ -1,4 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
+from typing import List, Optional
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
+from app.schemas.quiz import Quiz as QuizSchema
 from app.schemas.task import TaskResponse
 from app.workers.tasks import generate_quiz_task
 from app.routes.v1.auth import get_current_user
@@ -21,3 +25,19 @@ async def generate_quiz(
     
     task = generate_quiz_task.delay(lesson_id)
     return {"task_id": task.id, "status": "PENDING"}
+
+@router.get("/{lesson_id}", response_model=Optional[QuizSchema])
+async def get_quiz(
+    lesson_id: int,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    from app.models.quiz import Quiz
+    
+    # Check if quiz exists for this lesson
+    result = await db.execute(
+        select(Quiz)
+        .options(selectinload(Quiz.questions))
+        .where(Quiz.lesson_id == lesson_id)
+    )
+    return result.scalars().first()
