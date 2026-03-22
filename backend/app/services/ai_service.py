@@ -1,4 +1,5 @@
 import json
+import re
 import httpx
 from app.core.config import settings
 from app.schemas.topic import Roadmap
@@ -52,7 +53,6 @@ class AIService:
         if not content:
             return ""
         
-        import re
         lines = content.split('\n')
         repaired_lines = []
         in_table = False
